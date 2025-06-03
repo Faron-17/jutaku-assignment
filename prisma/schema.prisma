@@ -9,25 +9,46 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model User {
-  id    String     @id // 認証プロバイダーのユーザーID
-  email String  @unique
-  name  String
-  role  Role    @default(USER)
-  todos Todo[]
+model Users {
+  id        String   @id @default(uuid()) @db.Uuid
+  username  String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String  
+  role Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("USERS")
+  Entries Entries[]
 }
+
 enum Role {
   USER
   ADMIN
 }
 
+model Projects {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  summary     String
+  skills      String[]
+  rate        Int
+  deadlineAt  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 
-model Todo {
-  id        String   @id @default(uuid()) // Todoの一意識別子
-  title     String   // Todoのタイトル
-  completed Boolean  @default(false)    // 完了ステータス
-  createdAt DateTime @default(now())    // 作成日時
-  updatedAt DateTime @updatedAt       // 更新日時
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  @@map("PROJECTS")
+  Entries Entries[]
+}
+
+model Entries {
+  id          String    @id @default(uuid()) @db.Uuid
+  project     Projects  @relation(fields: [projectId], references: [id])
+  projectId   String    @db.Uuid
+  user        Users     @relation(fields: [userId], references: [id])
+  userId      String    @db.Uuid
+  entryAt     DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+
+  @@map("ENTRIES")
 }
