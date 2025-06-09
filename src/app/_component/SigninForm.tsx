@@ -34,8 +34,6 @@ export function SigninForm() {
   })
 
   const onSignInSubmit = async (data: SignInFormData) => {
-    console.log('aaa')
-
     await signin(data)
   }
 

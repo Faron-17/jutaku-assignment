@@ -68,7 +68,7 @@ export const signin = async ({
   } catch (error) {
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_SIGNIN_PATH)
+  redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 
 export const signOut = async (): Promise<{
