@@ -17,10 +17,21 @@ import {
 } from '@mantine/core'
 
 // サインアップ用のZodスキーマ
-const signupSchema = z.object({
-  email: z.string().email({ message: '無効なメールアドレスです' }),
-  password: z.string().min(1, { message: 'パスワードは必須です' })
-})
+const signupSchema = z
+  .object({
+    email: z.string().email({ message: '無効なメールアドレスです' }),
+    password: z
+      .string()
+      .min(8, { message: 'パスワードは必須です' })
+      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
+        message: 'パスワードは英字と数字の両方を含めてください'
+      }),
+    passwordConfirm: z.string()
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    path: ['passwordConfirm'],
+    message: 'パスワードが一致しません'
+  })
 type SignupFormData = z.infer<typeof signupSchema>
 
 export function SignupForm() {
@@ -33,7 +44,8 @@ export function SignupForm() {
   })
 
   const onSignupSubmit = async (data: SignupFormData) => {
-    signup(data)
+    const { email, password } = data
+    await signup({ email, password })
   }
 
   return (
@@ -67,6 +79,15 @@ export function SignupForm() {
               placeholder="password"
               {...register('password')}
               error={errors.password?.message}
+              disabled={isSubmitting}
+            />
+          </div>
+          <div>
+            <PasswordInput
+              label="パスワード(確認)"
+              placeholder="password confirm"
+              {...register('passwordConfirm')}
+              error={errors.passwordConfirm?.message}
               disabled={isSubmitting}
             />
           </div>
