@@ -13,7 +13,15 @@ export const ProjectList = ({ roleType }: RoleTypeProps) => {
         案件一覧
       </Title>
       <Box mb="lg">
-        <Button ml="auto" mr="0" display={'block'}>
+        <Button
+          ml="auto"
+          mr="0"
+          display={'block'}
+          type="button"
+          style={{ width: '12.25rem' }}
+          component={Link}
+          href={isAdmin ? '/admin/projects/new' : '/entry-list'}
+        >
           {isAdmin ? '新規案件作成' : 'エントリー一覧'}
         </Button>
       </Box>
