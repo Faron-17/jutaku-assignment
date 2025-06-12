@@ -5,20 +5,18 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signup } from '@/serverActions/supabaseAuth'
 
-// Mantine のコンポーネント
 import {
   Card,
   Button,
   TextInput,
   PasswordInput,
-  Title,
   Stack,
   Text
 } from '@mantine/core'
 
-// サインアップ用のZodスキーマ
 const signupSchema = z
   .object({
+    username: z.string().min(1, { message: '無効なメールアドレスです' }),
     email: z.string().email({ message: '無効なメールアドレスです' }),
     password: z
       .string()
@@ -53,46 +51,76 @@ export function SignupForm() {
       withBorder
       shadow="sm"
       radius="md"
-      padding="xl"
-      style={{ maxWidth: 400, margin: 'auto' }}
+      style={{
+        width: '40.25rem',
+        margin: 'auto',
+        padding: '2.875rem 2.5rem 5.5625rem 2.5rem',
+        marginTop: '3.2rem'
+      }}
     >
-      <Title order={2} style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        新規登録
-      </Title>
-
       <form onSubmit={handleSubmit(onSignupSubmit)}>
         {/* MantineのStackで要素を縦に並べ、styleで間隔を指定する */}
-        <Stack style={{ gap: '1rem' }}>
+        <Stack style={{ gap: '1.875rem' }}>
           <div>
             <TextInput
-              label="メールアドレス"
+              label={
+                <Text size="sm" fw={600} component="label">
+                  お名前
+                </Text>
+              }
+              placeholder="お名前"
+              {...register('username')}
+              // React Hook Form のエラーを Mantine 側のerrorプロップに渡す
+              error={errors.username?.message}
+              disabled={isSubmitting}
+              required
+            />
+          </div>
+          <div>
+            <TextInput
+              label={
+                <Text size="sm" fw={600} component="label">
+                  メールアドレス
+                </Text>
+              }
               placeholder="email"
               {...register('email')}
               // React Hook Form のエラーを Mantine 側のerrorプロップに渡す
               error={errors.email?.message}
               disabled={isSubmitting}
+              required
             />
           </div>
           <div>
             <PasswordInput
-              label="パスワード"
+              label={
+                <Text size="sm" fw={600} component="label">
+                  パスワード
+                </Text>
+              }
               placeholder="password"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
+              required
             />
           </div>
           <div>
             <PasswordInput
-              label="パスワード(確認)"
+              label={
+                <Text size="sm" fw={600} component="label">
+                  パスワード(確認)
+                </Text>
+              }
               placeholder="password confirm"
               {...register('passwordConfirm')}
               error={errors.passwordConfirm?.message}
               disabled={isSubmitting}
+              required
             />
           </div>
-          <Button type="submit" loading={isSubmitting}>
-            新規登録
+          <Button type="submit" loading={isSubmitting} mt={64}>
+            登録
           </Button>
         </Stack>
       </form>
