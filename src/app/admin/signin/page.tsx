@@ -1,9 +1,13 @@
-import React from 'react'
-import { AdminSigninForm } from './_component/AdminSigninForm'
+import { Title } from '@mantine/core'
+import styles from '@/app/page.module.css'
+import { AdminSigninForm } from '@/app/admin/signin/_component/AdminSigninForm'
 
-export default function Page() {
+export default async function Home() {
   return (
-    <main>
+    <main className={styles.main}>
+      <Title order={2} style={{ textAlign: 'center', marginBottom: '1rem' }}>
+        管理者ログイン
+      </Title>
       <AdminSigninForm />
     </main>
   )
