@@ -1,3 +1,6 @@
+import { ProjectList } from '@/app/_component/ProjectList'
+import { RoleType } from '@/types'
+
 export default function AdminProjects() {
-  return <>管理者向けプロジェクト一覧ページ</>
+  return <ProjectList roleType={RoleType.ADMIN} />
 }

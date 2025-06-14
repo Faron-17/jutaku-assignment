@@ -1,5 +1,6 @@
-import { ProjectList } from './_component/ProjectList'
+import { ProjectList } from '@/app/_component/ProjectList'
+import { RoleType } from '@/types'
 
 export default function Projects() {
-  return <ProjectList />
+  return <ProjectList roleType={RoleType.USER} />
 }
