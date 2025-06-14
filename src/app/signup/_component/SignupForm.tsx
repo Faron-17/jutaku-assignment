@@ -66,6 +66,9 @@ export function SignupForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   お名前
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="お名前"
@@ -73,7 +76,6 @@ export function SignupForm() {
               // React Hook Form のエラーを Mantine 側のerrorプロップに渡す
               error={errors.username?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <div>
@@ -81,6 +83,9 @@ export function SignupForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   メールアドレス
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="email"
@@ -88,7 +93,6 @@ export function SignupForm() {
               // React Hook Form のエラーを Mantine 側のerrorプロップに渡す
               error={errors.email?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <div>
@@ -96,13 +100,15 @@ export function SignupForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   パスワード
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="password"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <div>
@@ -110,13 +116,15 @@ export function SignupForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   パスワード(確認)
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="password confirm"
               {...register('passwordConfirm')}
               error={errors.passwordConfirm?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <Button type="submit" loading={isSubmitting} mt={64}>

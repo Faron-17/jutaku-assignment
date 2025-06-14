@@ -65,13 +65,15 @@ export function AdminSigninForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   メールアドレス
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="email"
               {...register('email')}
               error={errors.email?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <div>
@@ -79,13 +81,15 @@ export function AdminSigninForm() {
               label={
                 <Text size="sm" fw={600} component="label">
                   パスワード
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="password"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
-              required
             />
           </div>
           <Button type="submit" loading={isSubmitting} mt={64}>
