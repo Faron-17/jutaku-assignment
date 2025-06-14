@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
-import type { RoleTypeProps } from '~/@types'
+import type { RoleTypeProps } from '@/types'
 
 export const ProjectList = ({ roleType }: RoleTypeProps) => {
   const isAdmin = roleType === 'ADMIN'

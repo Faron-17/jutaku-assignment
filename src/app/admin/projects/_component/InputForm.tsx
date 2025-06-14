@@ -16,7 +16,7 @@ import {
   MultiSelect
 } from '@mantine/core'
 import Link from 'next/link'
-import type { pageTypeProps } from '~/@types'
+import type { PageTypeProps } from '@/types'
 
 const inputSchema = z.object({
   title: z.string().min(1),
@@ -32,7 +32,7 @@ const inputSchema = z.object({
 })
 type InputFormData = z.infer<typeof inputSchema>
 
-export function InputForm({ pageType }: pageTypeProps) {
+export function InputForm({ pageType }: PageTypeProps) {
   const {
     register,
     handleSubmit,
