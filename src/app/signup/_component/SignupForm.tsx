@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,6 +33,7 @@ const signupSchema = z
 type SignupFormData = z.infer<typeof signupSchema>
 
 export function SignupForm() {
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
@@ -42,8 +43,20 @@ export function SignupForm() {
   })
 
   const onSignupSubmit = async (data: SignupFormData) => {
-    const { email, password } = data
-    await signup({ email, password })
+    try {
+      const { username, email, password } = data
+      const { error } = await signup({ username, email, password })
+      if (error) {
+        setError(
+          '登録できませんでした。入力内容をお確かめください。尚、同じメールアドレスで登録はできません。'
+        )
+      }
+    } catch (error) {
+      console.error('Signup error:', error)
+      setError(
+        '予期せぬエラーが発生しました。しばらくしてから再度登録してください。'
+      )
+    }
   }
 
   return (
@@ -142,6 +155,11 @@ export function SignupForm() {
       {errors.password?.message && (
         <Text color="red" size="sm">
           {errors.password.message}
+        </Text>
+      )}
+      {error && (
+        <Text color="red" size="sm">
+          {error}
         </Text>
       )}
     </Card>
