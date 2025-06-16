@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signin } from '@/serverActions/supabaseAuth'
+import { signinAdmin } from '@/serverActions/supabaseAuth'
 
 import {
   Card,
@@ -15,24 +15,16 @@ import {
   Text
 } from '@mantine/core'
 
-const signinSchema = z
-  .object({
-    email: z.string().email({ message: '無効なメールアドレスです' }),
-    password: z
-      .string()
-      .min(8, { message: 'パスワードは必須です' })
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-        message: 'パスワードは英字と数字の両方を含めてください'
-      }),
-    passwordConfirm: z.string()
+const signinSchema = z.object({
+  email: z.string().email({ message: '無効なメールアドレスです' }),
+  password: z.string().regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
+    message: 'パスワードは英字と数字の両方を含めてください'
   })
-  .refine((data) => data.password === data.passwordConfirm, {
-    path: ['passwordConfirm'],
-    message: 'パスワードが一致しません'
-  })
+})
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function AdminSigninForm() {
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
@@ -42,8 +34,19 @@ export function AdminSigninForm() {
   })
 
   const onSigninSubmit = async (data: SigninFormData) => {
-    const { email, password } = data
-    await signin({ email, password })
+    try {
+      const { email, password } = data
+      const { error } = await signinAdmin({ email, password })
+      console.log('test')
+      if (error) {
+        setError('ログインできませんでした。入力内容をお確かめください。')
+      }
+    } catch (error) {
+      console.error('Signin error:', error)
+      setError(
+        '予期せぬエラーが発生しました。しばらくしてから再度ログインしてください。'
+      )
+    }
   }
 
   return (
@@ -107,6 +110,11 @@ export function AdminSigninForm() {
       {errors.password?.message && (
         <Text color="red" size="sm">
           {errors.password.message}
+        </Text>
+      )}
+      {error && (
+        <Text color="red" size="sm">
+          {error}
         </Text>
       )}
     </Card>
