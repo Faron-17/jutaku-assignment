@@ -21,7 +21,8 @@ export const AFTER_SIGNOUT_PATH = '/' satisfies LinkProps['href']
 export const AFTER_SIGNUP_PATH = '/' satisfies LinkProps['href']
 export const AFTER_SIGNUP_FOR_DB_REGISTER_PATH =
   '/projects' satisfies LinkProps['href']
-
+export const AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH =
+  '/admin/projects' satisfies LinkProps['href']
 // ログイン済みチェックURLリスト
 export function isLoginedCheckUrl(url: string): boolean {
   return url.startsWith('/my-page')
