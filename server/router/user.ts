@@ -11,6 +11,16 @@ export const userRouter = router({
   find: userProcedure.input(z.string()).query(async ({ input }) => {
     return await userRepository.findUnique(input)
   }),
+  findByRole: userProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        role: z.nativeEnum(Role)
+      })
+    )
+    .query(async ({ input }) => {
+      return await userRepository.findByRole(input)
+    }),
   create: userProcedure
     .input(
       z.object({

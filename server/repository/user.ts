@@ -1,4 +1,4 @@
-import type { Prisma, Users } from '@prisma/client'
+import type { Prisma, Users, Role } from '@prisma/client'
 import { prisma } from '~/prisma/prismaClient'
 
 export const userRepository = {
@@ -15,6 +15,17 @@ export const userRepository = {
   async findUnique(id: string): Promise<Users | null> {
     return prisma.users.findUnique({
       where: { id }
+    })
+  },
+  async findByRole({
+    id,
+    role
+  }: { id: string; role: Role }): Promise<Users | null> {
+    return prisma.users.findFirst({
+      where: {
+        id,
+        role
+      }
     })
   },
   async update({
