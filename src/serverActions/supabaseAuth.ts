@@ -10,31 +10,37 @@ import { createClient } from '~/lib/supabase/server'
 import { serverApi } from '~/lib/trpc/server-api'
 
 type EmailAndPassword = {
+  username?: string
   email: string
   password: string
 }
 
 export const signup = async ({
+  username,
   email,
   password
 }: EmailAndPassword): Promise<{
   error?: string
 }> => {
   try {
-    console.log('signup:', { email, password })
+    console.log('signup:', { username, email, password })
 
     const authResponse = await createClient().auth.signUp({
       email,
-      password
-      // options: {
-      //   emailRedirectTo: `${location.origin}/api/auth/callback`
-      // }
+      password,
+      options: {
+        data: {
+          display_name: username
+        }
+      }
     })
     console.log('authResponse', authResponse)
     const user = authResponse.data.user
     await serverApi().user.create({
       email: user?.email ?? '',
-      name: user?.email ?? ''
+      username: user?.user_metadata.display_name ?? '',
+      password: user?.user_metadata.password ?? '',
+      role: 'USER'
     })
 
     const userId = user?.id

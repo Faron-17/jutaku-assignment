@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,24 +14,19 @@ import {
   Text
 } from '@mantine/core'
 
-const signinSchema = z
-  .object({
-    email: z.string().email({ message: '無効なメールアドレスです' }),
-    password: z
-      .string()
-      .min(8, { message: 'パスワードは必須です' })
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-        message: 'パスワードは英字と数字の両方を含めてください'
-      }),
-    passwordConfirm: z.string()
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    path: ['passwordConfirm'],
-    message: 'パスワードが一致しません'
-  })
+const signinSchema = z.object({
+  email: z.string().email({ message: '無効なメールアドレスです' }),
+  password: z
+    .string()
+    .min(8, { message: 'パスワードは必須です' })
+    .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
+      message: 'パスワードは英字と数字の両方を含めてください'
+    })
+})
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function SigninForm() {
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
@@ -41,8 +36,18 @@ export function SigninForm() {
   })
 
   const onSigninSubmit = async (data: SigninFormData) => {
-    const { email, password } = data
-    await signin({ email, password })
+    try {
+      const { email, password } = data
+      const { error } = await signin({ email, password })
+      if (error) {
+        setError('ログインできませんでした。入力内容をお確かめください。')
+      }
+    } catch (error) {
+      console.error('Signin error:', error)
+      setError(
+        '予期せぬエラーが発生しました。しばらくしてから再度ログインしてください。'
+      )
+    }
   }
 
   return (
@@ -106,6 +111,11 @@ export function SigninForm() {
       {errors.password?.message && (
         <Text color="red" size="sm">
           {errors.password.message}
+        </Text>
+      )}
+      {error && (
+        <Text color="red" size="sm">
+          {error}
         </Text>
       )}
     </Card>
