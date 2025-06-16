@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -26,6 +26,7 @@ const signinSchema = z.object({
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function SigninForm() {
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
@@ -35,8 +36,18 @@ export function SigninForm() {
   })
 
   const onSigninSubmit = async (data: SigninFormData) => {
-    const { email, password } = data
-    await signin({ email, password })
+    try {
+      const { email, password } = data
+      const { error } = await signin({ email, password })
+      if (error) {
+        setError('ログインできませんでした。入力内容をお確かめください。')
+      }
+    } catch (error) {
+      console.error('Signin error:', error)
+      setError(
+        '予期せぬエラーが発生しました。しばらくしてから再度ログインしてください。'
+      )
+    }
   }
 
   return (
@@ -100,6 +111,11 @@ export function SigninForm() {
       {errors.password?.message && (
         <Text color="red" size="sm">
           {errors.password.message}
+        </Text>
+      )}
+      {error && (
+        <Text color="red" size="sm">
+          {error}
         </Text>
       )}
     </Card>
