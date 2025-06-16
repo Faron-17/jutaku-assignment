@@ -3,7 +3,8 @@
 import {
   AFTER_SIGNIN_PATH,
   AFTER_SIGNOUT_PATH,
-  AFTER_SIGNUP_FOR_DB_REGISTER_PATH
+  AFTER_SIGNUP_FOR_DB_REGISTER_PATH,
+  AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH
 } from '@/const/config'
 import { redirect } from 'next/navigation'
 import { createClient } from '~/lib/supabase/server'
@@ -75,6 +76,40 @@ export const signin = async ({
     return { error: JSON.stringify(error) }
   }
   redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
+}
+
+export const signinAdmin = async ({
+  email,
+  password
+}: EmailAndPassword): Promise<{
+  error?: string
+}> => {
+  try {
+    console.log('signin:', { email, password })
+
+    const { data, error } = await createClient().auth.signInWithPassword({
+      email,
+      password
+    })
+    if (error) {
+      console.log('error', error)
+      return { error: JSON.stringify(error) }
+    }
+    if (!data) return { error: 'data is undefined' }
+
+    const user = await serverApi().user.findByRole({
+      id: data.user.id,
+      role: 'ADMIN'
+    })
+    if (!user) {
+      return { error: 'User not found or invalid role' }
+    }
+
+    console.log('signin admin成功', { data })
+  } catch (error) {
+    return { error: JSON.stringify(error) }
+  }
+  redirect(AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 
 export const signOut = async (): Promise<{
