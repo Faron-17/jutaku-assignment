@@ -14,21 +14,15 @@ import {
   Text
 } from '@mantine/core'
 
-const signinSchema = z
-  .object({
-    email: z.string().email({ message: '無効なメールアドレスです' }),
-    password: z
-      .string()
-      .min(8, { message: 'パスワードは必須です' })
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-        message: 'パスワードは英字と数字の両方を含めてください'
-      }),
-    passwordConfirm: z.string()
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    path: ['passwordConfirm'],
-    message: 'パスワードが一致しません'
-  })
+const signinSchema = z.object({
+  email: z.string().email({ message: '無効なメールアドレスです' }),
+  password: z
+    .string()
+    .min(8, { message: 'パスワードは必須です' })
+    .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
+      message: 'パスワードは英字と数字の両方を含めてください'
+    })
+})
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function SigninForm() {
