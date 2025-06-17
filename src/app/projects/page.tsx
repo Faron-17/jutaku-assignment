@@ -10,12 +10,18 @@ export default async function Projects() {
   const user = await api.userInfo().catch(() => redirect('/'))
   if (!user) redirect('/')
 
+  // 管理者権限でのログインの場合はリダイレクト
+  const userData = await api.user.find(user.id)
+  if (userData?.role === RoleType.ADMIN) redirect('/')
+
   // エントリーしたプロジェクトのID取得
   const projectIds =
     (await api.entries.list(user.id))?.map((e) => e.projectId) ?? []
 
   // エントリーしていないプロジェクトの取得
-  const yetEntryProjects = await api.projects.list(projectIds).catch(() => null)
+  const yetEntryProjects = await api.projects
+    .listNot(projectIds)
+    .catch(() => null)
 
   if (!yetEntryProjects || yetEntryProjects.length === 0) {
     return <p>データがありませんでした。</p>

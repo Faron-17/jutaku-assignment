@@ -13,16 +13,12 @@ export default async function AdminProjects() {
     .catch(() => redirect(AFTER_NOT_SIGNIN_PATH_ADMIN))
   if (!user) redirect(AFTER_NOT_SIGNIN_PATH_ADMIN)
 
-  // エントリーしたプロジェクトのID取得
-  const projectIds =
-    (await api.entries.list(user.id))?.map((e) => e.projectId) ?? []
+  // プロジェクトの取得
+  const projects = await api.projects.list().catch(() => null)
 
-  // エントリーしていないプロジェクトの取得
-  const yetEntryProjects = await api.projects.list(projectIds).catch(() => null)
-
-  if (!yetEntryProjects || yetEntryProjects.length === 0) {
+  if (!projects || projects.length === 0) {
     return <p>データがありませんでした。</p>
   }
 
-  return <ProjectList roleType={RoleType.ADMIN} projects={yetEntryProjects} />
+  return <ProjectList roleType={RoleType.ADMIN} projects={projects} />
 }
