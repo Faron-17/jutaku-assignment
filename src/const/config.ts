@@ -29,6 +29,9 @@ export function isLoginedCheckUrl(url: string): boolean {
   // url.startsWith('/users')
 }
 
+export const AFTER_NOT_SIGNIN_PATH_ADMIN =
+  '/admin/signin' satisfies LinkProps['href']
+
 // ログイン済みチェックで失敗した際のリダイレクト先
 export const LOGINED_CHECK_FAILED_REDIRECT_URL: string = '/'
 
