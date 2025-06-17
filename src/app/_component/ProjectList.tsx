@@ -65,7 +65,9 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
                     type="button"
                     component={Link}
                     href={route({
-                      pathname: '/admin/projects/[projectId]',
+                      pathname: isAdmin
+                        ? '/admin/projects/[projectId]'
+                        : '/projects/[projectId]',
                       query: { projectId: project.id }
                     })}
                   >

@@ -7,5 +7,21 @@ export const entriesRepository = {
       where: { userId: id },
       distinct: ['projectId']
     })
+  },
+  async create(data: { projectId: string; userId: string }): Promise<Entries> {
+    return prisma.entries.create({
+      data: {
+        project: {
+          connect: {
+            id: data.projectId
+          }
+        },
+        user: {
+          connect: {
+            id: data.userId
+          }
+        }
+      }
+    })
   }
 }
