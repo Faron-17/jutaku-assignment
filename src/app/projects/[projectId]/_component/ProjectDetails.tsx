@@ -4,9 +4,33 @@ import dayjs from 'dayjs'
 import { Card, Button, Title, Text, Box, Modal, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import type { Projects } from '@prisma/client'
+import { createEntry } from '../../../../serverActions/entries'
+import { useRouter } from 'next/navigation'
 
-export function ProjectDetails({ project }: { project: Projects }) {
+export function ProjectDetails({
+  project,
+  userId
+}: { project: Projects; userId: string }) {
   const [opened, { open, close }] = useDisclosure(false)
+  const router = useRouter()
+
+  // エントリー
+  const handleEntry = async () => {
+    try {
+      await createEntry({
+        projectId: project.id,
+        userId
+      })
+      open()
+    } catch (error) {
+      console.error('エントリーに失敗しました:', error)
+    }
+  }
+
+  const handleClose = () => {
+    close()
+    router.push('/entry-list')
+  }
 
   return (
     <Card
@@ -59,19 +83,19 @@ export function ProjectDetails({ project }: { project: Projects }) {
           {project.rate.toLocaleString()}円
         </Text>
       </Box>
-      <Button type="submit" mt={20} onClick={open}>
+      <Button type="submit" mt={20} onClick={handleEntry}>
         <Text size="md" fw={600}>
           この案件にエントリーする
         </Text>
       </Button>
-      <Modal opened={opened} onClose={close} mt={100} centered>
+      <Modal opened={opened} onClose={handleClose} mt={100} centered>
         <Flex direction="column" align="center" justify="center" gap="md">
           <Text size="md">エントリーしました</Text>
           <Button
             type="submit"
             mt={20}
             mb={34}
-            onClick={close}
+            onClick={handleClose}
             style={{ width: '19.625rem' }}
           >
             <Text size="md" fw={600}>

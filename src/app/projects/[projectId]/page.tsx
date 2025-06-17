@@ -41,7 +41,7 @@ export default async function ProjectDetail({
         </Button>
       </Box>
       {project ? (
-        <ProjectDetails project={project} />
+        <ProjectDetails project={project} userId={user.id} />
       ) : (
         <p>プロジェクトを取得できませんでした。</p>
       )}
