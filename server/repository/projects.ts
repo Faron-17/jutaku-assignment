@@ -16,5 +16,10 @@ export const projectsRepository = {
       },
       orderBy: { createdAt: 'desc' }
     })
+  },
+  async findUnique(id: string): Promise<Projects | null> {
+    return prisma.projects.findUnique({
+      where: { id }
+    })
   }
 }
