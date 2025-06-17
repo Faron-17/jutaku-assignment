@@ -1,9 +1,11 @@
 'use client'
 
+import dayjs from 'dayjs'
 import { Card, Button, Title, Text, Box, Modal, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import type { Projects } from '@prisma/client'
 
-export function ProjectDetails() {
+export function ProjectDetails({ project }: { project: Projects }) {
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
@@ -24,37 +26,37 @@ export function ProjectDetails() {
       <Box>
         <Title order={5}>案件作成日</Title>
         <Text size="md" mt={8}>
-          2024/03/12
+          {dayjs(project.createdAt).format('YYYY/MM/DD')}
         </Text>
       </Box>
       <Box>
         <Title order={5}>案件名</Title>
         <Text size="md" mt={8}>
-          開発マッチングアプリ作成依頼
+          {project.title}
         </Text>
       </Box>
       <Box>
         <Title order={5}>概要</Title>
         <Text size="md" mt={8}>
-          アプリ開発したい人と開発してほしい人をマッチングし 雇用を促進したい
+          {project.summary}
         </Text>
       </Box>
       <Box>
         <Title order={5}>必要なスキル</Title>
         <Text size="md" mt={8}>
-          Next, Typescript, Supabase
+          {project.skills.join(', ')}
         </Text>
       </Box>
       <Box>
         <Title order={5}>募集締切</Title>
         <Text size="md" mt={8}>
-          2024/04/20
+          {dayjs(project.deadlineAt).format('YYYY/MM/DD')}
         </Text>
       </Box>
       <Box>
         <Title order={5}>単価</Title>
         <Text size="md" mt={8}>
-          30,000円
+          {project.rate.toLocaleString()}円
         </Text>
       </Box>
       <Button type="submit" mt={20} onClick={open}>

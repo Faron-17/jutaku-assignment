@@ -9,5 +9,8 @@ export const projectsRouter = router({
   }),
   listNot: userProcedure.input(z.array(z.string())).query(async ({ input }) => {
     return await projectsRepository.findManyNot(input)
+  }),
+  find: userProcedure.input(z.string()).query(async ({ input }) => {
+    return await projectsRepository.findUnique(input)
   })
 })

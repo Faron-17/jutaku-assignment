@@ -1,8 +1,19 @@
 import { ProjectDetails } from '@/app/projects/[projectId]/_component/ProjectDetails'
 import { Box, Button, Title } from '@mantine/core'
 import Link from 'next/link'
+import { serverApi } from '~/lib/trpc/server-api'
 
-export default function ProjectDetail() {
+export default async function ProjectDetail({
+  params
+}: {
+  params: { projectId: string }
+}) {
+  const projectId = params.projectId
+  const api = serverApi()
+
+  // プロジェクトの取得
+  const project = await api.projects.find(projectId).catch(() => null)
+
   return (
     <>
       <Title order={2} ta="center" mb="lg">
@@ -13,13 +24,17 @@ export default function ProjectDetail() {
           display={'block'}
           type="button"
           component={Link}
-          href="/admin/projects"
+          href="/projects"
           style={{ width: '7rem' }}
         >
           戻る
         </Button>
       </Box>
-      <ProjectDetails />
+      {project ? (
+        <ProjectDetails project={project} />
+      ) : (
+        <p>プロジェクトを取得できませんでした。</p>
+      )}
     </>
   )
 }
