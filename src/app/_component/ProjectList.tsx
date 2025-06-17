@@ -2,11 +2,17 @@
 
 import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
-import type { RoleTypeProps } from '@/types'
+import type { Projects } from '@prisma/client'
+import type { RoleType } from '@/types'
+import { route } from 'nextjs-routes'
 
-export const ProjectList = ({ roleType }: RoleTypeProps) => {
+type ProjectListProps = {
+  roleType: RoleType
+  projects: Projects[]
+}
+
+export function ProjectList({ roleType, projects }: ProjectListProps) {
   const isAdmin = roleType === 'ADMIN'
-
   return (
     <>
       <Title order={2} ta="center" mb="lg">
@@ -47,29 +53,45 @@ export const ProjectList = ({ roleType }: RoleTypeProps) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr>
-            <Table.Td>2024/03/12</Table.Td>
-            <Table.Td>案件マッチングアプリ</Table.Td>
-            <Table.Td>アプリ開発したい方と開発したい人...</Table.Td>
-            <Table.Td>Next.js、TypeScript、Supabase</Table.Td>
-            <Table.Td>
-              <Group gap="sm" justify="center">
-                <Button type="button" component={Link} href="/">
-                  詳細
-                </Button>
-                {isAdmin && (
-                  <>
-                    <Button type="button" component={Link} href="/">
-                      編集
-                    </Button>
-                    <Button type="button" color="red">
-                      削除
-                    </Button>
-                  </>
-                )}
-              </Group>
-            </Table.Td>
-          </Table.Tr>
+          {projects.map((project) => (
+            <Table.Tr key={project.id}>
+              <Table.Td>{project.createdAt.toLocaleDateString()}</Table.Td>
+              <Table.Td>{project.title}</Table.Td>
+              <Table.Td>{project.summary}</Table.Td>
+              <Table.Td>{project.skills.join(', ')}</Table.Td>
+              <Table.Td>
+                <Group gap="sm" justify="center">
+                  <Button
+                    type="button"
+                    component={Link}
+                    href={route({
+                      pathname: '/projects/[projectId]',
+                      query: { projectId: project.id }
+                    })}
+                  >
+                    詳細
+                  </Button>
+                  {isAdmin && (
+                    <>
+                      <Button
+                        type="button"
+                        component={Link}
+                        href={route({
+                          pathname: '/admin/projects/[projectId]/edit',
+                          query: { projectId: project.id }
+                        })}
+                      >
+                        編集
+                      </Button>
+                      <Button type="button" color="red">
+                        削除
+                      </Button>
+                    </>
+                  )}
+                </Group>
+              </Table.Td>
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
     </>
