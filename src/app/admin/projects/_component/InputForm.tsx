@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useTransition } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,7 +16,10 @@ import {
   MultiSelect
 } from '@mantine/core'
 import Link from 'next/link'
-import type { PageTypeProps } from '@/types'
+import { useRouter } from 'next/navigation'
+import { PageType, type PageTypeProps } from '@/types'
+import type { Projects } from '@prisma/client'
+import { editProject } from '@/serverActions/edit'
 
 const inputSchema = z.object({
   title: z.string().min(1),
@@ -32,16 +35,61 @@ const inputSchema = z.object({
 })
 type InputFormData = z.infer<typeof inputSchema>
 
-export function InputForm({ pageType }: PageTypeProps) {
+type Props = {
+  pageType: PageType
+  project?: Projects
+}
+
+export function InputForm({ pageType, project }: Props) {
+  const [isPending, startTransition] = useTransition()
+
+  const router = useRouter()
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting }
   } = useForm<InputFormData>({
-    resolver: zodResolver(inputSchema)
+    resolver: zodResolver(inputSchema),
+    defaultValues: project
+      ? {
+          title: project.title,
+          summary: project.summary,
+          skills: project.skills.join(','),
+          deadline: new Date(project.deadlineAt),
+          rate: project.rate
+        }
+      : undefined
   })
 
-  const onInputSubmit = async (data: InputFormData) => {}
+  // スキルの初期値を設定
+  React.useEffect(() => {
+    if (project?.skills) {
+      setValue('skills', project.skills.join(','))
+    }
+  }, [project, setValue])
+
+  const onInputSubmit = async (data: InputFormData) => {
+    try {
+      if (pageType === PageType.EDIT && project) {
+        await editProject({
+          id: project.id,
+          title: data.title,
+          summary: data.summary,
+          skills: data.skills.split(','),
+          rate: data.rate,
+          deadlineAt: data.deadline
+        })
+        startTransition(() => {
+          // @ts-ignore
+          router.replace(`/admin/projects/${project.id}`)
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      console.error('保存に失敗しました:', error)
+    }
+  }
 
   return (
     <>
@@ -96,10 +144,22 @@ export function InputForm({ pageType }: PageTypeProps) {
                 </Text>
               }
               placeholder="スキルを選択"
-              data={['Next', 'Supabase', 'Typescript', 'React', 'Node.js']}
+              data={[
+                'Next.js',
+                'Supabase',
+                'TypeScript',
+                'React',
+                'Node.js',
+                'Ruby',
+                'Python',
+                'AWS',
+                'Prisma'
+              ]}
               searchable
               clearable
               required
+              defaultValue={project?.skills}
+              onChange={(value) => setValue('skills', value.join(','))}
             />
             <DateInput
               valueFormat="YYYY/MM/DD"
@@ -110,8 +170,11 @@ export function InputForm({ pageType }: PageTypeProps) {
               }
               placeholder="募集締切日"
               required
+              defaultValue={
+                project?.deadlineAt ? new Date(project.deadlineAt) : undefined
+              }
+              onChange={(value) => setValue('deadline', value || new Date())}
             />
-
             <TextInput
               label={
                 <span
@@ -132,8 +195,8 @@ export function InputForm({ pageType }: PageTypeProps) {
               required={false}
             />
 
-            <Button type="submit" loading={isSubmitting} mt={30}>
-              {pageType === 'NEW' ? '登録' : '保存'}
+            <Button type="submit" loading={isSubmitting || isPending} mt={30}>
+              {pageType === PageType.NEW ? '登録' : '保存'}
             </Button>
           </Stack>
         </form>

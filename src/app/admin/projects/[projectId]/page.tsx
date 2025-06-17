@@ -16,7 +16,7 @@ export default async function AdminProjectDetail({
   const user = await api
     .adminInfo()
     .catch(() => redirect(AFTER_NOT_SIGNIN_PATH_ADMIN))
-  // if (!user) redirect(AFTER_NOT_SIGNIN_PATH_ADMIN)
+  if (!user) redirect(AFTER_NOT_SIGNIN_PATH_ADMIN)
 
   // プロジェクトの取得
   const project = await api.projects.find(projectId).catch(() => null)
@@ -29,7 +29,7 @@ export default async function AdminProjectDetail({
       {project ? (
         <ProjectDetails project={project} />
       ) : (
-        <p>プロジェクトを取得できませんでした。</p>
+        <p>案件を取得できませんでした。</p>
       )}
     </>
   )

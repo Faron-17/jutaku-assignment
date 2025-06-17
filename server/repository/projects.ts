@@ -21,5 +21,15 @@ export const projectsRepository = {
     return prisma.projects.findUnique({
       where: { id }
     })
+  },
+  async update({
+    data
+  }: {
+    data: Prisma.ProjectsUpdateInput
+  }): Promise<Projects> {
+    return prisma.projects.update({
+      where: { id: data.id as string },
+      data
+    })
   }
 }

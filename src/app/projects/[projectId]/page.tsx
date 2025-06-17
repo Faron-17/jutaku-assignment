@@ -43,7 +43,7 @@ export default async function ProjectDetail({
       {project ? (
         <ProjectDetails project={project} userId={user.id} />
       ) : (
-        <p>プロジェクトを取得できませんでした。</p>
+        <p>案件を取得できませんでした。</p>
       )}
     </>
   )
