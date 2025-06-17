@@ -20,7 +20,6 @@ import { useRouter } from 'next/navigation'
 import { PageType, type PageTypeProps } from '@/types'
 import type { Projects } from '@prisma/client'
 import { editProject } from '@/serverActions/edit'
-import { AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH } from '@/const/config'
 
 const inputSchema = z.object({
   title: z.string().min(1),
