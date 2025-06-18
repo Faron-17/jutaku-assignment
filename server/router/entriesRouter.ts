@@ -7,7 +7,11 @@ export const entriesRouter = router({
   list: userProcedure.input(z.string()).query(async ({ input }) => {
     return await entriesRepository.findMany(input)
   }),
-
+  findManyByProjectId: userProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      return await entriesRepository.findManyByProjectId(input)
+    }),
   create: userProcedure
     .input(
       z.object({

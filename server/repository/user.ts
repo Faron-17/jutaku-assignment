@@ -12,6 +12,16 @@ export const userRepository = {
       orderBy: { id: 'asc' }
     })
   },
+  async findById(data: string[]): Promise<Users[]> {
+    return prisma.users.findMany({
+      where: {
+        id: {
+          in: data
+        }
+      },
+      orderBy: { id: 'asc' }
+    })
+  },
   async findUnique(id: string): Promise<Users | null> {
     return prisma.users.findUnique({
       where: { id }
