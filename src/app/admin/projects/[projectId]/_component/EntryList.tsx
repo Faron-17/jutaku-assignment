@@ -8,7 +8,7 @@ const EntryList = () => {
 
   return (
     <>
-      <Button type="button" mt="1.25rem" onClick={open}>
+      <Button type="button" my="1.25rem" onClick={open}>
         この案件のエントリー一覧を見る
       </Button>
       <Modal
