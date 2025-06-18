@@ -37,7 +37,6 @@ export function AdminSigninForm() {
     try {
       const { email, password } = data
       const { error } = await signinAdmin({ email, password })
-      console.log('test')
       if (error) {
         setError('ログインできませんでした。入力内容をお確かめください。')
       }

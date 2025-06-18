@@ -1,15 +1,34 @@
 'use client'
 
+import { deleteProject } from '@/serverActions/delete'
+import { PageType } from '@/types'
 import { Button, Modal, Flex, Text, Box } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useRouter } from 'next/navigation'
 
-const DeleteProject = () => {
+type Props = {
+  pageType: PageType
+  projectId: string
+}
+
+const DeleteProject = ({ pageType, projectId }: Props) => {
   const [opened, { open, close }] = useDisclosure(false)
+  const router = useRouter()
+
+  const handleDelete = async () => {
+    try {
+      await deleteProject(projectId)
+      router.replace('/admin/projects')
+    } catch (error) {
+      console.log(error)
+      console.error('削除に失敗しました:', error)
+    }
+  }
 
   return (
     <>
-      <Button type="button" color="red" mt="1.25rem" onClick={open}>
-        この案件を削除する
+      <Button type="button" color="red" onClick={open}>
+        {pageType === PageType.LIST ? '削除' : 'この案件を削除する'}
       </Button>
       <Modal opened={opened} onClose={close} mt={100} centered>
         <Flex direction="column" align="center" justify="center" gap="md">
@@ -37,7 +56,7 @@ const DeleteProject = () => {
               color="red"
               ml={16}
             >
-              <Text size="sm" fw={600}>
+              <Text size="sm" fw={600} onClick={handleDelete}>
                 はい
               </Text>
             </Button>

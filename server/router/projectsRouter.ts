@@ -1,5 +1,5 @@
 import { router } from '~/lib/trpc/trpc'
-import { userProcedure } from '../middleware'
+import { adminProcedure, userProcedure } from '../middleware'
 import { projectsRepository } from '../repository/projects'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
@@ -51,5 +51,8 @@ export const projectsRouter = router({
       return await projectsRepository.update({
         data: input
       })
-    })
+    }),
+  delete: adminProcedure.input(z.string()).mutation(async ({ input }) => {
+    return await projectsRepository.delete(input)
+  })
 })

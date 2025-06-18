@@ -4,6 +4,7 @@ import { Box, Button, Title } from '@mantine/core'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { serverApi } from '~/lib/trpc/server-api'
+import { formatDate } from '~/util'
 
 export default async function ProjectDetail({
   params
@@ -41,7 +42,12 @@ export default async function ProjectDetail({
         </Button>
       </Box>
       {project ? (
-        <ProjectDetails project={project} userId={user.id} />
+        <ProjectDetails
+          project={project}
+          userId={user.id}
+          deadline={formatDate(project.deadlineAt)}
+          createdAt={formatDate(project.createdAt)}
+        />
       ) : (
         <p>案件を取得できませんでした。</p>
       )}

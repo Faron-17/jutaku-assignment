@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 // 重複を削除
 export const removeDuplicateValues = ([...array]) => {
   return array.filter((value, index, self) => self.indexOf(value) === index)
@@ -17,3 +19,5 @@ export const isJson = (data: string) => {
   }
   return true
 }
+
+export const formatDate = (date: Date) => dayjs(date).format('YYYY/MM/DD')
