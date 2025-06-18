@@ -77,7 +77,7 @@ const ProjectDetails = ({
         >
           編集する
         </Button>
-        <EntryList />
+        <EntryList projectId={project.id} />
         <DeleteProject projectId={project.id} pageType={PageType.DETAIL} />
       </Box>
     </>

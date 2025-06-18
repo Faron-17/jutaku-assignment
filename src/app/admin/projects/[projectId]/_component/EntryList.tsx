@@ -1,14 +1,37 @@
 'use client'
 
+import { getEntry } from '@/serverActions/entries'
 import { Button, Modal, Flex, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useState } from 'react'
 
-const EntryList = () => {
+const EntryList = ({ projectId }: { projectId: string }) => {
   const [opened, { open, close }] = useDisclosure(false)
+  const [users, setUsers] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+
+  const handleGetEntry = async () => {
+    try {
+      setLoading(true)
+      const userNames = await getEntry({ projectId })
+      setUsers(userNames)
+      open()
+    } catch (error) {
+      console.log(error)
+      console.error('取得に失敗しました:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
-      <Button type="button" my="1.25rem" onClick={open}>
+      <Button
+        type="button"
+        my="1.25rem"
+        onClick={handleGetEntry}
+        loading={loading}
+      >
         この案件のエントリー一覧を見る
       </Button>
       <Modal
@@ -28,10 +51,16 @@ const EntryList = () => {
           gap="md"
           pb={50}
         >
-          <Text size="md">吉田 一郎</Text>
-          <Text size="md">田中 次郎</Text>
-          <Text size="md">加藤 三朗</Text>
-          <Text size="md">東京 四郎</Text>
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              <Text key={index} size="md">
+                {user}
+              </Text>
+            ))
+          ) : (
+            <Text size="md">エントリーがありません</Text>
+          )}
         </Flex>
       </Modal>
     </>
