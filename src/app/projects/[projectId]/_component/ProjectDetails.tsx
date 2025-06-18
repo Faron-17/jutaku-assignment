@@ -1,6 +1,5 @@
 'use client'
 
-import dayjs from 'dayjs'
 import { Card, Button, Title, Text, Box, Modal, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import type { Projects } from '@prisma/client'
@@ -9,8 +8,10 @@ import { useRouter } from 'next/navigation'
 
 export function ProjectDetails({
   project,
-  userId
-}: { project: Projects; userId: string }) {
+  userId,
+  deadline,
+  createdAt
+}: { project: Projects; userId: string; deadline: string; createdAt: string }) {
   const [opened, { open, close }] = useDisclosure(false)
   const router = useRouter()
 
@@ -50,7 +51,7 @@ export function ProjectDetails({
       <Box>
         <Title order={5}>案件作成日</Title>
         <Text size="md" mt={8}>
-          {dayjs(project.createdAt).format('YYYY/MM/DD')}
+          {createdAt}
         </Text>
       </Box>
       <Box>
@@ -74,7 +75,7 @@ export function ProjectDetails({
       <Box>
         <Title order={5}>募集締切</Title>
         <Text size="md" mt={8}>
-          {dayjs(project.deadlineAt).format('YYYY/MM/DD')}
+          {deadline}
         </Text>
       </Box>
       <Box>

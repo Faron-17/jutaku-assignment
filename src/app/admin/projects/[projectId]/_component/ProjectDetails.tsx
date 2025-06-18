@@ -1,17 +1,17 @@
 'use client'
 
-import dayjs from 'dayjs'
 import { Box, Button, Table } from '@mantine/core'
 import Link from 'next/link'
-import { useDisclosure } from '@mantine/hooks'
 import EntryList from './EntryList'
 import DeleteProject from './DeleteProject'
 import type { Projects } from '@prisma/client'
 import { route } from 'nextjs-routes'
+import { PageType } from '@/types'
 
-const ProjectDetails = ({ project }: { project: Projects }) => {
-  const [opened, { open, close }] = useDisclosure(false)
-
+const ProjectDetails = ({
+  project,
+  deadline
+}: { project: Projects; deadline: string }) => {
   return (
     <>
       <Box mb="2.5rem" style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -49,9 +49,7 @@ const ProjectDetails = ({ project }: { project: Projects }) => {
             <Table.Th bg="blue.1" ta="center" w="20rem">
               募集締切
             </Table.Th>
-            <Table.Td>
-              {dayjs(project.deadlineAt).format('YYYY/MM/DD')}
-            </Table.Td>
+            <Table.Td>{deadline}</Table.Td>
           </Table.Tr>
           <Table.Tr>
             <Table.Th bg="blue.1" ta="center" w="20rem">
