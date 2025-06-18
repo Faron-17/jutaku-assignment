@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
 import type { Projects } from '@prisma/client'
-import type { RoleType } from '@/types'
+import { PageType, type RoleType } from '@/types'
 import { route } from 'nextjs-routes'
+import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProject'
 
 type ProjectListProps = {
   roleType: RoleType
@@ -85,9 +86,10 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
                       >
                         編集
                       </Button>
-                      <Button type="button" color="red">
-                        削除
-                      </Button>
+                      <DeleteProject
+                        projectId={project.id}
+                        pageType={PageType.LIST}
+                      />
                     </>
                   )}
                 </Group>

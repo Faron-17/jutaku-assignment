@@ -80,7 +80,7 @@ const ProjectDetails = ({ project }: { project: Projects }) => {
           編集する
         </Button>
         <EntryList />
-        <DeleteProject />
+        <DeleteProject projectId={project.id} pageType={PageType.DETAIL} />
       </Box>
     </>
   )

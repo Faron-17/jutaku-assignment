@@ -9,7 +9,9 @@ export interface RoleTypeProps {
 
 export enum PageType {
   NEW = 'NEW',
-  EDIT = 'EDIT'
+  EDIT = 'EDIT',
+  LIST = 'LIST',
+  DETAIL = 'DETAIL'
 }
 
 export interface PageTypeProps {

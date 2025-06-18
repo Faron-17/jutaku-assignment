@@ -36,5 +36,10 @@ export const projectsRepository = {
       where: { id: data.id as string },
       data
     })
+  },
+  async delete(id: string): Promise<Projects> {
+    return prisma.projects.delete({
+      where: { id }
+    })
   }
 }
