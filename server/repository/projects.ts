@@ -22,6 +22,11 @@ export const projectsRepository = {
       where: { id }
     })
   },
+  async create(data: Prisma.ProjectsCreateInput): Promise<Projects> {
+    return prisma.projects.create({
+      data
+    })
+  },
   async update({
     data
   }: {

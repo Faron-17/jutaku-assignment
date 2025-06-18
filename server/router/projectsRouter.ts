@@ -14,6 +14,19 @@ export const projectsRouter = router({
   find: userProcedure.input(z.string()).query(async ({ input }) => {
     return await projectsRepository.findUnique(input)
   }),
+  create: userProcedure
+    .input(
+      z.object({
+        title: z.string(),
+        summary: z.string(),
+        skills: z.array(z.string()),
+        rate: z.coerce.number(),
+        deadlineAt: z.date()
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await projectsRepository.create(input)
+    }),
   update: userProcedure
     .input(
       z.object({
@@ -36,10 +49,7 @@ export const projectsRouter = router({
       }
 
       return await projectsRepository.update({
-        data: {
-          ...input,
-          skills: input.skills
-        }
+        data: input
       })
     })
 })
