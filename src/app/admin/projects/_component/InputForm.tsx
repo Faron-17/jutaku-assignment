@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation'
 import { PageType, type PageTypeProps } from '@/types'
 import type { Projects } from '@prisma/client'
 import { editProject } from '@/serverActions/edit'
+import { createProject } from '@/serverActions/new'
 
 const inputSchema = z.object({
   title: z.string().min(1),
@@ -83,6 +84,18 @@ export function InputForm({ pageType, project }: Props) {
         startTransition(() => {
           // @ts-ignore
           router.replace(`/admin/projects/${project.id}`)
+        })
+      }
+      if (pageType === PageType.NEW) {
+        await createProject({
+          title: data.title,
+          summary: data.summary,
+          skills: data.skills.split(','),
+          rate: data.rate,
+          deadlineAt: data.deadline
+        })
+        startTransition(() => {
+          router.replace('/admin/projects')
         })
       }
     } catch (error) {
