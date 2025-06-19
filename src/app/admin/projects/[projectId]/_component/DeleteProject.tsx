@@ -21,6 +21,9 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
     try {
       await deleteProject(projectId)
       startTransition(() => {
+        if (pageType === PageType.LIST) {
+          router.refresh()
+        }
         router.replace('/admin/projects')
       })
     } catch (error) {

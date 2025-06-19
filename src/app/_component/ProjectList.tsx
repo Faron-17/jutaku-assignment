@@ -7,6 +7,8 @@ import { PageType, type RoleType } from '@/types'
 import { route } from 'nextjs-routes'
 import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProject'
 import { formatDate } from '~/util'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 type ProjectListProps = {
   roleType: RoleType
@@ -14,7 +16,13 @@ type ProjectListProps = {
 }
 
 export function ProjectList({ roleType, projects }: ProjectListProps) {
+  const router = useRouter()
   const isAdmin = roleType === 'ADMIN'
+
+  useEffect(() => {
+    router.refresh()
+  }, [])
+
   return (
     <>
       <Title order={2} ta="center" mb="lg">
