@@ -2,9 +2,8 @@
 
 import { deleteProject } from '@/serverActions/delete'
 import { PageType } from '@/types'
-import { Button, Modal, Flex, Text, Box } from '@mantine/core'
+import { Button, Modal, Flex, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { useRouter } from 'next/navigation'
 
 type Props = {
   pageType: PageType
@@ -13,12 +12,10 @@ type Props = {
 
 const DeleteProject = ({ pageType, projectId }: Props) => {
   const [opened, { open, close }] = useDisclosure(false)
-  const router = useRouter()
 
   const handleDelete = async () => {
     try {
       await deleteProject(projectId)
-      router.replace('/admin/projects')
     } catch (error) {
       console.log(error)
       console.error('削除に失敗しました:', error)
