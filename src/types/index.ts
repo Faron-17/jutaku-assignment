@@ -17,3 +17,12 @@ export enum PageType {
 export interface PageTypeProps {
   pageType: PageType
 }
+
+export type Project = {
+  id: string
+  title: string
+  summary: string
+  skills: string[]
+  rate: number
+  deadlineAt: Date
+}

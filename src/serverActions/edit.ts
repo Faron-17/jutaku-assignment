@@ -1,9 +1,9 @@
 'use server'
 
-import type { Projects } from '@prisma/client'
+import type { Project } from '@/types'
 import { serverApi } from '~/lib/trpc/server-api'
 
-export async function editProject(data: Projects) {
+export async function editProject(data: Project) {
   const api = serverApi()
   return api.projects.update(data)
 }
