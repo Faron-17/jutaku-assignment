@@ -14,6 +14,11 @@ export const projectsRouter = router({
   find: userProcedure.input(z.string()).query(async ({ input }) => {
     return await projectsRepository.findUnique(input)
   }),
+  findByProjectIds: userProcedure
+    .input(z.array(z.string()))
+    .query(async ({ input }) => {
+      return await projectsRepository.findManyByProjectIds(input)
+    }),
   create: userProcedure
     .input(
       z.object({

@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
+import type { Projects } from '@prisma/client'
+import { formatDate } from '~/util'
 
-export const EntryProjectList = () => {
+export const EntryProjectList = ({ projects }: { projects: Projects[] }) => {
   return (
     <>
       <Box mb="2.5rem" style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -32,11 +34,13 @@ export const EntryProjectList = () => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr>
-            <Table.Td>2024/03/12</Table.Td>
-            <Table.Td>案件マッチングアプリ</Table.Td>
-            <Table.Td>30,000円</Table.Td>
-          </Table.Tr>
+          {projects.map((project) => (
+            <Table.Tr key={project.id}>
+              <Table.Td>{formatDate(project.createdAt)}</Table.Td>
+              <Table.Td>{project.title}</Table.Td>
+              <Table.Td>{project.rate?.toLocaleString()}円</Table.Td>
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
     </>
