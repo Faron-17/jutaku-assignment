@@ -22,6 +22,16 @@ export const projectsRepository = {
       where: { id }
     })
   },
+  async findManyByProjectIds(ids: string[]): Promise<Projects[]> {
+    return prisma.projects.findMany({
+      where: {
+        id: {
+          in: ids
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+  },
   async create(data: Prisma.ProjectsCreateInput): Promise<Projects> {
     return prisma.projects.create({
       data
