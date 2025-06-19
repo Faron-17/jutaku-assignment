@@ -20,9 +20,7 @@ export const signup = async ({
   username,
   email,
   password
-}: EmailAndPassword): Promise<{
-  error?: string
-}> => {
+}: EmailAndPassword) => {
   try {
     console.log('signup:', { username, email, password })
 
@@ -51,7 +49,6 @@ export const signup = async ({
     console.log('error', error)
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 export const signin = async ({
   email,
@@ -78,12 +75,7 @@ export const signin = async ({
   redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 
-export const signinAdmin = async ({
-  email,
-  password
-}: EmailAndPassword): Promise<{
-  error?: string
-}> => {
+export const signinAdmin = async ({ email, password }: EmailAndPassword) => {
   try {
     console.log('signin:', { email, password })
 
@@ -109,7 +101,6 @@ export const signinAdmin = async ({
   } catch (error) {
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 
 export const signOut = async (): Promise<{

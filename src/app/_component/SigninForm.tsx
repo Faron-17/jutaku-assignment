@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,6 +13,7 @@ import {
   Stack,
   Text
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 
 const signinSchema = z.object({
   email: z.string().email({ message: '無効なメールアドレスです' }),
@@ -27,6 +28,9 @@ type SigninFormData = z.infer<typeof signinSchema>
 
 export function SigninForm() {
   const [error, setError] = useState('')
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -38,9 +42,14 @@ export function SigninForm() {
   const onSigninSubmit = async (data: SigninFormData) => {
     try {
       const { email, password } = data
-      const { error } = await signin({ email, password })
+      const result = await signin({ email, password })
+      const error = result?.error
       if (error) {
         setError('ログインできませんでした。入力内容をお確かめください。')
+      } else {
+        startTransition(() => {
+          router.replace('/projects')
+        })
       }
     } catch (error) {
       console.error('Signin error:', error)
@@ -74,7 +83,7 @@ export function SigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="email"
+              placeholder="メールアドレス"
               {...register('email')}
               error={errors.email?.message}
               disabled={isSubmitting}
@@ -90,13 +99,13 @@ export function SigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="password"
+              placeholder="パスワード"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
             />
           </div>
-          <Button type="submit" loading={isSubmitting} mt={64}>
+          <Button type="submit" loading={isSubmitting || isPending} mt={64}>
             ログイン
           </Button>
         </Stack>

@@ -5,6 +5,7 @@ import { useDisclosure } from '@mantine/hooks'
 import type { Projects } from '@prisma/client'
 import { createEntry } from '../../../../serverActions/entries'
 import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 
 export function ProjectDetails({
   project,
@@ -14,22 +15,26 @@ export function ProjectDetails({
 }: { project: Projects; userId: string; deadline: string; createdAt: string }) {
   const [opened, { open, close }] = useDisclosure(false)
   const router = useRouter()
-
+  const [isPending, startTransition] = useTransition()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   // エントリー
   const handleEntry = async () => {
+    setIsSubmitting(true)
     try {
       await createEntry({
         projectId: project.id,
         userId
       })
-      open()
+      startTransition(() => {
+        open()
+      })
     } catch (error) {
       console.error('エントリーに失敗しました:', error)
     }
+    setIsSubmitting(false)
   }
 
   const handleClose = () => {
-    close()
     router.push('/entry-list')
   }
 
@@ -84,7 +89,12 @@ export function ProjectDetails({
           {project.rate.toLocaleString()}円
         </Text>
       </Box>
-      <Button type="submit" mt={20} onClick={handleEntry}>
+      <Button
+        type="submit"
+        mt={20}
+        onClick={handleEntry}
+        loading={isSubmitting || isPending}
+      >
         <Text size="md" fw={600}>
           この案件にエントリーする
         </Text>

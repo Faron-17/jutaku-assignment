@@ -6,6 +6,9 @@ import type { Projects } from '@prisma/client'
 import { PageType, type RoleType } from '@/types'
 import { route } from 'nextjs-routes'
 import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProject'
+import { formatDate } from '~/util'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 type ProjectListProps = {
   roleType: RoleType
@@ -13,7 +16,13 @@ type ProjectListProps = {
 }
 
 export function ProjectList({ roleType, projects }: ProjectListProps) {
+  const router = useRouter()
   const isAdmin = roleType === 'ADMIN'
+
+  useEffect(() => {
+    router.refresh()
+  }, [])
+
   return (
     <>
       <Title order={2} ta="center" mb="lg">
@@ -56,7 +65,7 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
         <Table.Tbody>
           {projects.map((project) => (
             <Table.Tr key={project.id}>
-              <Table.Td>{project.createdAt.toLocaleDateString()}</Table.Td>
+              <Table.Td>{formatDate(project.createdAt)}</Table.Td>
               <Table.Td>{project.title}</Table.Td>
               <Table.Td>{project.summary}</Table.Td>
               <Table.Td>{project.skills.join(', ')}</Table.Td>

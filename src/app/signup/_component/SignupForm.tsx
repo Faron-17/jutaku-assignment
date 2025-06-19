@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,6 +13,7 @@ import {
   Stack,
   Text
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 
 const signupSchema = z
   .object({
@@ -33,7 +34,9 @@ const signupSchema = z
 type SignupFormData = z.infer<typeof signupSchema>
 
 export function SignupForm() {
+  const [isPending, startTransition] = useTransition()
   const [error, setError] = useState('')
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -45,11 +48,16 @@ export function SignupForm() {
   const onSignupSubmit = async (data: SignupFormData) => {
     try {
       const { username, email, password } = data
-      const { error } = await signup({ username, email, password })
+      const result = await signup({ username, email, password })
+      const error = result?.error
       if (error) {
         setError(
           '登録できませんでした。入力内容をお確かめください。尚、同じメールアドレスで登録はできません。'
         )
+      } else {
+        startTransition(() => {
+          router.replace('/projects')
+        })
       }
     } catch (error) {
       console.error('Signup error:', error)
@@ -101,7 +109,7 @@ export function SignupForm() {
                   </Text>
                 </Text>
               }
-              placeholder="email"
+              placeholder="メールアドレス"
               {...register('email')}
               // React Hook Form のエラーを Mantine 側のerrorプロップに渡す
               error={errors.email?.message}
@@ -118,7 +126,7 @@ export function SignupForm() {
                   </Text>
                 </Text>
               }
-              placeholder="password"
+              placeholder="パスワード"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
@@ -134,13 +142,13 @@ export function SignupForm() {
                   </Text>
                 </Text>
               }
-              placeholder="password confirm"
+              placeholder="パスワード(確認)"
               {...register('passwordConfirm')}
               error={errors.passwordConfirm?.message}
               disabled={isSubmitting}
             />
           </div>
-          <Button type="submit" loading={isSubmitting} mt={64}>
+          <Button type="submit" loading={isSubmitting || isPending} mt={64}>
             登録
           </Button>
         </Stack>

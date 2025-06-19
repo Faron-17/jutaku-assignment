@@ -36,7 +36,8 @@ export function AdminSigninForm() {
   const onSigninSubmit = async (data: SigninFormData) => {
     try {
       const { email, password } = data
-      const { error } = await signinAdmin({ email, password })
+      const result = await signinAdmin({ email, password })
+      const error = result?.error
       if (error) {
         setError('ログインできませんでした。入力内容をお確かめください。')
       }

@@ -23,16 +23,21 @@ import { editProject } from '@/serverActions/edit'
 import { createProject } from '@/serverActions/new'
 
 const inputSchema = z.object({
-  title: z.string().min(1),
-  summary: z.string().min(1),
-  skills: z.string().min(1),
-  deadline: z.date(),
+  title: z.string().min(1, { message: '案件名を入力してください' }),
+  summary: z.string().min(1, { message: '案件概要を入力してください' }),
+  skills: z
+    .array(z.string())
+    .min(1, { message: '必要なスキルを選択してください' }),
+  deadline: z.date({
+    required_error: '募集締切日を選択してください',
+    invalid_type_error: '有効な日付を選択してください'
+  }),
   rate: z.coerce
     .number({
-      required_error: '数値を入力してください',
+      required_error: '単価を入力してください',
       invalid_type_error: '数値を入力してください（文字列は使えません）'
     })
-    .min(0, { message: '0以上の値を入力してください' })
+    .min(1, { message: '値を入力してください' })
 })
 type InputFormData = z.infer<typeof inputSchema>
 
@@ -56,7 +61,7 @@ export function InputForm({ pageType, project }: Props) {
       ? {
           title: project.title,
           summary: project.summary,
-          skills: project.skills.join(','),
+          skills: project.skills,
           deadline: new Date(project.deadlineAt),
           rate: project.rate
         }
@@ -66,7 +71,7 @@ export function InputForm({ pageType, project }: Props) {
   // スキルの初期値を設定
   React.useEffect(() => {
     if (project?.skills) {
-      setValue('skills', project.skills.join(','))
+      setValue('skills', project.skills)
     }
   }, [project, setValue])
 
@@ -77,7 +82,7 @@ export function InputForm({ pageType, project }: Props) {
           id: project.id,
           title: data.title,
           summary: data.summary,
-          skills: data.skills.split(','),
+          skills: data.skills,
           rate: data.rate,
           deadlineAt: data.deadline
         })
@@ -90,7 +95,7 @@ export function InputForm({ pageType, project }: Props) {
         await createProject({
           title: data.title,
           summary: data.summary,
-          skills: data.skills.split(','),
+          skills: data.skills,
           rate: data.rate,
           deadlineAt: data.deadline
         })
@@ -130,30 +135,37 @@ export function InputForm({ pageType, project }: Props) {
               label={
                 <Text size="sm" fw={600} component="label">
                   案件名
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="案件名"
               {...register('title')}
               error={errors.title?.message}
               disabled={isSubmitting}
-              required
             />
             <TextInput
               label={
                 <Text size="sm" fw={600} component="label">
                   概要
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="概要"
               {...register('summary')}
               error={errors.summary?.message}
               disabled={isSubmitting}
-              required
             />
             <MultiSelect
               label={
                 <Text size="sm" fw={600} component="label">
                   必要なスキル
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="スキルを選択"
@@ -170,23 +182,26 @@ export function InputForm({ pageType, project }: Props) {
               ]}
               searchable
               clearable
-              required
               defaultValue={project?.skills}
-              onChange={(value) => setValue('skills', value.join(','))}
+              onChange={(value) => setValue('skills', value)}
+              error={errors.skills?.message}
             />
             <DateInput
               valueFormat="YYYY/MM/DD"
               label={
                 <Text size="sm" fw={600} component="label">
                   募集締切日
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </Text>
               }
               placeholder="募集締切日"
-              required
               defaultValue={
                 project?.deadlineAt ? new Date(project.deadlineAt) : undefined
               }
               onChange={(value) => setValue('deadline', value || new Date())}
+              error={errors.deadline?.message}
             />
             <TextInput
               label={
@@ -197,7 +212,10 @@ export function InputForm({ pageType, project }: Props) {
                     fontWeight: 600
                   }}
                 >
-                  単価<span style={{ color: 'red', marginLeft: 4 }}>*</span>
+                  単価
+                  <Text color="red" display="inline" fw={700}>
+                    *
+                  </Text>
                 </span>
               }
               placeholder="例: 300000"
@@ -205,7 +223,6 @@ export function InputForm({ pageType, project }: Props) {
               {...register('rate')}
               error={errors.rate?.message}
               disabled={isSubmitting}
-              required={false}
             />
 
             <Button type="submit" loading={isSubmitting || isPending} mt={30}>
