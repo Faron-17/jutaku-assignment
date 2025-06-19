@@ -4,6 +4,8 @@ import { deleteProject } from '@/serverActions/delete'
 import { PageType } from '@/types'
 import { Button, Modal, Flex, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
 
 type Props = {
   pageType: PageType
@@ -12,10 +14,15 @@ type Props = {
 
 const DeleteProject = ({ pageType, projectId }: Props) => {
   const [opened, { open, close }] = useDisclosure(false)
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   const handleDelete = async () => {
     try {
       await deleteProject(projectId)
+      startTransition(() => {
+        router.replace('/admin/projects')
+      })
     } catch (error) {
       console.log(error)
       console.error('削除に失敗しました:', error)
@@ -24,7 +31,7 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
 
   return (
     <>
-      <Button type="button" color="red" onClick={open}>
+      <Button type="button" color="red" onClick={open} loading={isPending}>
         {pageType === PageType.LIST ? '削除' : 'この案件を削除する'}
       </Button>
       <Modal opened={opened} onClose={close} mt={100} centered>
@@ -40,6 +47,7 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
               style={{ width: '4.625rem' }}
               variant="outline"
               color="gray"
+              loading={isPending}
             >
               <Text size="sm" fw={600}>
                 いいえ
@@ -52,6 +60,7 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
               style={{ width: '4.625rem' }}
               color="red"
               ml={16}
+              loading={isPending}
             >
               <Text size="sm" fw={600} onClick={handleDelete}>
                 はい
