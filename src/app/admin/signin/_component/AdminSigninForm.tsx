@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,6 +14,7 @@ import {
   Stack,
   Text
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 
 const signinSchema = z.object({
   email: z.string().email({ message: '無効なメールアドレスです' }),
@@ -24,7 +25,10 @@ const signinSchema = z.object({
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function AdminSigninForm() {
+  const [isPending, startTransition] = useTransition()
   const [error, setError] = useState('')
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -40,6 +44,10 @@ export function AdminSigninForm() {
       const error = result?.error
       if (error) {
         setError('ログインできませんでした。入力内容をお確かめください。')
+      } else {
+        startTransition(() => {
+          router.replace('/admin/projects')
+        })
       }
     } catch (error) {
       console.error('Signin error:', error)
@@ -73,7 +81,7 @@ export function AdminSigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="email"
+              placeholder="メールアドレス"
               {...register('email')}
               error={errors.email?.message}
               disabled={isSubmitting}
@@ -89,13 +97,13 @@ export function AdminSigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="password"
+              placeholder="パスワード"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
             />
           </div>
-          <Button type="submit" loading={isSubmitting} mt={64}>
+          <Button type="submit" loading={isSubmitting || isPending} mt={64}>
             ログイン
           </Button>
         </Stack>
