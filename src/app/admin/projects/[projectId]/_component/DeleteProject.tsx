@@ -5,7 +5,7 @@ import { PageType } from '@/types'
 import { Button, Modal, Flex, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 type Props = {
   pageType: PageType
@@ -13,6 +13,7 @@ type Props = {
 }
 
 const DeleteProject = ({ pageType, projectId }: Props) => {
+  const [error, setError] = useState('')
   const [opened, { open, close }] = useDisclosure(false)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -28,7 +29,7 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
       })
     } catch (error) {
       console.log(error)
-      console.error('削除に失敗しました:', error)
+      setError('削除に失敗しました')
     }
   }
 
@@ -40,6 +41,11 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
       <Modal opened={opened} onClose={close} mt={100} centered>
         <Flex direction="column" align="center" justify="center" gap="md">
           <Text size="md">この案件を削除します。よろしいですか？</Text>
+          {error && (
+            <Text color="red" size="sm">
+              {error}
+            </Text>
+          )}
           <Flex justify="right" style={{ width: '100%' }}>
             <Button
               type="button"
@@ -57,15 +63,15 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
               </Text>
             </Button>
             <Button
-              type="button"
+              type="submit"
               mt={20}
-              onClick={close}
               style={{ width: '4.625rem' }}
               color="red"
               ml={16}
               loading={isPending}
+              onClick={handleDelete}
             >
-              <Text size="sm" fw={600} onClick={handleDelete}>
+              <Text size="sm" fw={600}>
                 はい
               </Text>
             </Button>

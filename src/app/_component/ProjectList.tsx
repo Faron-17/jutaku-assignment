@@ -8,7 +8,7 @@ import { route } from 'nextjs-routes'
 import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProject'
 import { formatDate } from '~/util'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { AiOutlineReload } from 'react-icons/ai'
 
 type ProjectListProps = {
   roleType: RoleType
@@ -16,21 +16,29 @@ type ProjectListProps = {
 }
 
 export function ProjectList({ roleType, projects }: ProjectListProps) {
-  const router = useRouter()
   const isAdmin = roleType === 'ADMIN'
-
-  useEffect(() => {
+  const router = useRouter()
+  const handleReload = () => {
     router.refresh()
-  }, [])
-
+  }
   return (
     <>
       <Title order={2} ta="center" mb="lg">
         案件一覧
       </Title>
-      <Box mb="lg">
+      <Box
+        mb="lg"
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center'
+        }}
+      >
+        <Button onClick={handleReload} color="blue" variant="outline">
+          <AiOutlineReload size={16} />
+        </Button>
         <Button
-          ml="auto"
+          ml="1rem"
           mr="0"
           display={'block'}
           type="button"

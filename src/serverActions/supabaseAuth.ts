@@ -6,6 +6,7 @@ import {
   AFTER_SIGNUP_FOR_DB_REGISTER_PATH,
   AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH
 } from '@/const/config'
+import { RoleType } from '@/types'
 import { redirect } from 'next/navigation'
 import { createClient } from '~/lib/supabase/server'
 import { serverApi } from '~/lib/trpc/server-api'
@@ -50,12 +51,7 @@ export const signup = async ({
     return { error: JSON.stringify(error) }
   }
 }
-export const signin = async ({
-  email,
-  password
-}: EmailAndPassword): Promise<{
-  error?: string
-}> => {
+export const signin = async ({ email, password }: EmailAndPassword) => {
   try {
     console.log('signin:', { email, password })
 
@@ -68,11 +64,19 @@ export const signin = async ({
       return { error: JSON.stringify(error) }
     }
     if (!data) return { error: 'data is undefined' }
+
+    const user = await serverApi().user.findByRole({
+      id: data.user.id,
+      role: RoleType.USER
+    })
+    if (!user) {
+      return { error: 'User not found or invalid role' }
+    }
     console.log('signin成功', { data })
+    return { error: false }
   } catch (error) {
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
 }
 
 export const signinAdmin = async ({ email, password }: EmailAndPassword) => {
@@ -91,7 +95,7 @@ export const signinAdmin = async ({ email, password }: EmailAndPassword) => {
 
     const user = await serverApi().user.findByRole({
       id: data.user.id,
-      role: 'ADMIN'
+      role: RoleType.ADMIN
     })
     if (!user) {
       return { error: 'User not found or invalid role' }
