@@ -14,6 +14,7 @@ import {
   Text
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
+import { URL_USER_PROJECT_LIST } from '@/const/config'
 
 const signinSchema = z.object({
   email: z.string().email({ message: '無効なメールアドレスです' }),
@@ -48,7 +49,7 @@ export function SigninForm() {
         setError('ログインできませんでした。入力内容をお確かめください。')
       } else {
         startTransition(() => {
-          router.replace('/projects')
+          router.replace(URL_USER_PROJECT_LIST)
         })
       }
     } catch (error) {

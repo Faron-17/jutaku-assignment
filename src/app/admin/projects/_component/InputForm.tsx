@@ -21,6 +21,8 @@ import { PageType, type PageTypeProps } from '@/types'
 import type { Projects } from '@prisma/client'
 import { editProject } from '@/serverActions/edit'
 import { createProject } from '@/serverActions/new'
+import { route } from 'nextjs-routes'
+import { URL_ADMIN_PROJECT, URL_ADMIN_PROJECT_LIST } from '@/const/config'
 
 const inputSchema = z.object({
   title: z.string().min(1, { message: '案件名を入力してください' }),
@@ -87,8 +89,14 @@ export function InputForm({ pageType, project }: Props) {
           deadlineAt: data.deadline
         })
         startTransition(() => {
-          // @ts-ignore
-          router.replace(`/admin/projects/${project.id}`)
+          startTransition(() => {
+            router.push(
+              route({
+                pathname: URL_ADMIN_PROJECT,
+                query: { projectId: project.id }
+              })
+            )
+          })
         })
       }
       if (pageType === PageType.NEW) {
@@ -100,7 +108,7 @@ export function InputForm({ pageType, project }: Props) {
           deadlineAt: data.deadline
         })
         startTransition(() => {
-          router.replace('/admin/projects')
+          router.replace(URL_ADMIN_PROJECT_LIST)
         })
       }
     } catch (error) {
@@ -116,7 +124,7 @@ export function InputForm({ pageType, project }: Props) {
           display={'block'}
           type="button"
           component={Link}
-          href="/admin/projects"
+          href={URL_ADMIN_PROJECT_LIST}
           style={{ width: '7rem' }}
         >
           戻る

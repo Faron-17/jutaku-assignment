@@ -9,6 +9,13 @@ import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProjec
 import { formatDate } from '~/util'
 import { useRouter } from 'next/navigation'
 import { AiOutlineReload } from 'react-icons/ai'
+import {
+  URL_ADMIN_EDIT,
+  URL_ADMIN_NEW,
+  URL_ADMIN_PROJECT,
+  URL_USER_ENTRY_LIST,
+  URL_USER_PROJECT
+} from '@/const/config'
 
 type ProjectListProps = {
   roleType: RoleType
@@ -44,7 +51,7 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
           type="button"
           style={{ width: '12.25rem' }}
           component={Link}
-          href={isAdmin ? '/admin/projects/new' : '/entry-list'}
+          href={isAdmin ? URL_ADMIN_NEW : URL_USER_ENTRY_LIST}
         >
           {isAdmin ? '新規案件作成' : 'エントリー一覧'}
         </Button>
@@ -83,9 +90,7 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
                     type="button"
                     component={Link}
                     href={route({
-                      pathname: isAdmin
-                        ? '/admin/projects/[projectId]'
-                        : '/projects/[projectId]',
+                      pathname: isAdmin ? URL_ADMIN_PROJECT : URL_USER_PROJECT,
                       query: { projectId: project.id }
                     })}
                   >
@@ -97,7 +102,7 @@ export function ProjectList({ roleType, projects }: ProjectListProps) {
                         type="button"
                         component={Link}
                         href={route({
-                          pathname: '/admin/projects/[projectId]/edit',
+                          pathname: URL_ADMIN_EDIT,
                           query: { projectId: project.id }
                         })}
                       >

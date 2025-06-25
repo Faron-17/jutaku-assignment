@@ -15,6 +15,7 @@ import {
   Text
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
+import { URL_ADMIN_PROJECT_LIST } from '@/const/config'
 
 const signinSchema = z.object({
   email: z.string().email({ message: '無効なメールアドレスです' }),
@@ -46,7 +47,7 @@ export function AdminSigninForm() {
         setError('ログインできませんでした。入力内容をお確かめください。')
       } else {
         startTransition(() => {
-          router.replace('/admin/projects')
+          router.replace(URL_ADMIN_PROJECT_LIST)
         })
       }
     } catch (error) {
