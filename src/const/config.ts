@@ -1,7 +1,6 @@
 // 設定値を定義する
 
 import type { LinkProps } from 'next/link'
-import { RoleType } from '@/types'
 import {
   isProd,
   isPreview,
