@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
 import type { Projects } from '@prisma/client'
 import { formatDate } from '~/util'
+import { URL_USER_PROJECT_LIST } from '@/const/config'
 
 export const EntryProjectList = ({ projects }: { projects: Projects[] }) => {
   return (
@@ -13,7 +14,7 @@ export const EntryProjectList = ({ projects }: { projects: Projects[] }) => {
           display={'block'}
           type="button"
           component={Link}
-          href="/projects"
+          href={URL_USER_PROJECT_LIST}
           style={{ width: '7rem' }}
         >
           戻る

@@ -1,4 +1,5 @@
 import { ProjectDetails } from '@/app/projects/[projectId]/_component/ProjectDetails'
+import { LOGINED_CHECK_FAILED_REDIRECT_URL } from '@/const/config'
 import { RoleType } from '@/types'
 import { Box, Button, Title } from '@mantine/core'
 import Link from 'next/link'
@@ -15,12 +16,15 @@ export default async function ProjectDetail({
   const api = serverApi()
 
   // ユーザー認証
-  const user = await api.userInfo().catch(() => redirect('/'))
-  if (!user) redirect('/')
+  const user = await api
+    .userInfo()
+    .catch(() => redirect(LOGINED_CHECK_FAILED_REDIRECT_URL))
+  if (!user) redirect(LOGINED_CHECK_FAILED_REDIRECT_URL)
 
   // 管理者権限でのログインの場合はリダイレクト
   const userData = await api.user.find(user.id)
-  if (userData?.role === RoleType.ADMIN) redirect('/')
+  if (userData?.role === RoleType.ADMIN)
+    redirect(LOGINED_CHECK_FAILED_REDIRECT_URL)
 
   // プロジェクトの取得
   const project = await api.projects.find(projectId).catch(() => null)

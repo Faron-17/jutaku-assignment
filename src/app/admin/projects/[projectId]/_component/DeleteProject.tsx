@@ -1,5 +1,6 @@
 'use client'
 
+import { URL_ADMIN_PROJECT_LIST } from '@/const/config'
 import { deleteProject } from '@/serverActions/delete'
 import { PageType } from '@/types'
 import { Button, Modal, Flex, Text } from '@mantine/core'
@@ -25,7 +26,7 @@ const DeleteProject = ({ pageType, projectId }: Props) => {
         if (pageType === PageType.LIST) {
           router.refresh()
         }
-        router.replace('/admin/projects')
+        router.replace(URL_ADMIN_PROJECT_LIST)
       })
     } catch (error) {
       console.log(error)

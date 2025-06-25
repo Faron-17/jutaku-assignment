@@ -7,6 +7,7 @@ import DeleteProject from './DeleteProject'
 import type { Projects } from '@prisma/client'
 import { route } from 'nextjs-routes'
 import { PageType } from '@/types'
+import { URL_ADMIN_EDIT, URL_ADMIN_PROJECT_LIST } from '@/const/config'
 
 const ProjectDetails = ({
   project,
@@ -19,7 +20,7 @@ const ProjectDetails = ({
           display={'block'}
           type="button"
           component={Link}
-          href="/admin/projects"
+          href={URL_ADMIN_PROJECT_LIST}
           style={{ width: '7rem' }}
         >
           戻る
@@ -71,7 +72,7 @@ const ProjectDetails = ({
           type="button"
           component={Link}
           href={route({
-            pathname: '/admin/projects/[projectId]/edit',
+            pathname: URL_ADMIN_EDIT,
             query: { projectId: project.id }
           })}
         >

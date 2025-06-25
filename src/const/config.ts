@@ -1,6 +1,7 @@
 // 設定値を定義する
 
 import type { LinkProps } from 'next/link'
+import { RoleType } from '@/types'
 import {
   isProd,
   isPreview,
@@ -43,3 +44,11 @@ export const getCorsUrl = () => {
 
   return CORS_LOCAL_URL
 }
+
+export const URL_ADMIN_PROJECT_LIST = '/admin/projects'
+export const URL_ADMIN_PROJECT = '/admin/projects/[projectId]'
+export const URL_ADMIN_NEW = '/admin/projects/new'
+export const URL_ADMIN_EDIT = '/admin/projects/[projectId]/edit'
+export const URL_USER_PROJECT = '/projects/[projectId]'
+export const URL_USER_PROJECT_LIST = '/projects'
+export const URL_USER_ENTRY_LIST = '/entry-list'
