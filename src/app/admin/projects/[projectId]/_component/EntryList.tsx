@@ -53,8 +53,7 @@ const EntryList = ({ projectId }: { projectId: string }) => {
         >
           {users.length > 0 ? (
             users.map((user, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              <Text key={index} size="md">
+              <Text key={index + user} size="md">
                 {user}
               </Text>
             ))

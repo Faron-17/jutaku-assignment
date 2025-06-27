@@ -89,14 +89,12 @@ export function InputForm({ pageType, project }: Props) {
           deadlineAt: data.deadline
         })
         startTransition(() => {
-          startTransition(() => {
-            router.push(
-              route({
-                pathname: URL_ADMIN_PROJECT,
-                query: { projectId: project.id }
-              })
-            )
-          })
+          router.push(
+            route({
+              pathname: URL_ADMIN_PROJECT,
+              query: { projectId: project.id }
+            })
+          )
         })
       }
       if (pageType === PageType.NEW) {
