@@ -26,7 +26,9 @@ export async function getEntry({
   if (entryList) {
     const userList = entryList.map((item) => item.userId)
     const users = await api.user.findById(userList)
-    return users.map((user) => user.username)
+    return users.map((user) => {
+      return { id: user.id, name: user.username }
+    })
   }
-  return []
+  return [{ id: '', name: '' }]
 }
