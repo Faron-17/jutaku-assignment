@@ -7,14 +7,14 @@ import { useState } from 'react'
 
 const EntryList = ({ projectId }: { projectId: string }) => {
   const [opened, { open, close }] = useDisclosure(false)
-  const [users, setUsers] = useState<string[]>([])
+  const [users, setUsers] = useState<{ id: string; name: string }[]>([])
   const [loading, setLoading] = useState(false)
 
   const handleGetEntry = async () => {
     try {
       setLoading(true)
-      const userNames = await getEntry({ projectId })
-      setUsers(userNames)
+      const users = await getEntry({ projectId })
+      setUsers(users)
       open()
     } catch (error) {
       console.log(error)
@@ -52,9 +52,9 @@ const EntryList = ({ projectId }: { projectId: string }) => {
           pb={50}
         >
           {users.length > 0 ? (
-            users.map((user, index) => (
-              <Text key={index + user} size="md">
-                {user}
+            users.map((user) => (
+              <Text key={user?.id} size="md">
+                {user?.name}
               </Text>
             ))
           ) : (
@@ -65,5 +65,3 @@ const EntryList = ({ projectId }: { projectId: string }) => {
     </>
   )
 }
-
-export default EntryList
