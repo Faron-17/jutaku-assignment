@@ -65,3 +65,5 @@ const EntryList = ({ projectId }: { projectId: string }) => {
     </>
   )
 }
+
+export default EntryList
