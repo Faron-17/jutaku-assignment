@@ -1,19 +1,52 @@
 'use client'
 
-import { Button, Modal, Flex, Text, Box } from '@mantine/core'
+import { URL_ADMIN_PROJECT_LIST } from '@/const/config'
+import { deleteProject } from '@/serverActions/delete'
+import { PageType } from '@/types'
+import { Button, Modal, Flex, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 
-const DeleteProject = () => {
+type Props = {
+  pageType: PageType
+  projectId: string
+}
+
+const DeleteProject = ({ pageType, projectId }: Props) => {
+  const [error, setError] = useState('')
   const [opened, { open, close }] = useDisclosure(false)
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
+  const handleDelete = async () => {
+    try {
+      await deleteProject(projectId)
+      startTransition(() => {
+        if (pageType === PageType.LIST) {
+          router.refresh()
+        }
+        router.replace(URL_ADMIN_PROJECT_LIST)
+      })
+    } catch (error) {
+      console.log(error)
+      setError('削除に失敗しました')
+    }
+  }
 
   return (
     <>
-      <Button type="button" color="red" mt="1.25rem" onClick={open}>
-        この案件を削除する
+      <Button type="button" color="red" onClick={open} loading={isPending}>
+        {pageType === PageType.LIST ? '削除' : 'この案件を削除する'}
       </Button>
       <Modal opened={opened} onClose={close} mt={100} centered>
         <Flex direction="column" align="center" justify="center" gap="md">
           <Text size="md">この案件を削除します。よろしいですか？</Text>
+          {error && (
+            <Text color="red" size="sm">
+              {error}
+            </Text>
+          )}
           <Flex justify="right" style={{ width: '100%' }}>
             <Button
               type="button"
@@ -24,18 +57,20 @@ const DeleteProject = () => {
               style={{ width: '4.625rem' }}
               variant="outline"
               color="gray"
+              loading={isPending}
             >
               <Text size="sm" fw={600}>
                 いいえ
               </Text>
             </Button>
             <Button
-              type="button"
+              type="submit"
               mt={20}
-              onClick={close}
               style={{ width: '4.625rem' }}
               color="red"
               ml={16}
+              loading={isPending}
+              onClick={handleDelete}
             >
               <Text size="sm" fw={600}>
                 はい

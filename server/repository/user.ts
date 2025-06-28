@@ -1,20 +1,41 @@
-import type { Prisma, User } from '@prisma/client'
+import type { Prisma, Users, Role } from '@prisma/client'
 import { prisma } from '~/prisma/prismaClient'
 
 export const userRepository = {
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    return prisma.user.create({
+  async create(data: Prisma.UsersCreateInput): Promise<Users> {
+    return prisma.users.create({
       data
     })
   },
-  async findMany(): Promise<User[]> {
-    return prisma.user.findMany({
+  async findMany(): Promise<Users[]> {
+    return prisma.users.findMany({
       orderBy: { id: 'asc' }
     })
   },
-  async findUnique(id: string): Promise<User | null> {
-    return prisma.user.findUnique({
+  async findById(data: string[]): Promise<Users[]> {
+    return prisma.users.findMany({
+      where: {
+        id: {
+          in: data
+        }
+      },
+      orderBy: { id: 'asc' }
+    })
+  },
+  async findUnique(id: string): Promise<Users | null> {
+    return prisma.users.findUnique({
       where: { id }
+    })
+  },
+  async findByRole({
+    id,
+    role
+  }: { id: string; role: Role }): Promise<Users | null> {
+    return prisma.users.findFirst({
+      where: {
+        id,
+        role
+      }
     })
   },
   async update({
@@ -22,15 +43,15 @@ export const userRepository = {
     data
   }: {
     id: string
-    data: Prisma.UserUpdateInput
-  }): Promise<User> {
-    return prisma.user.update({
+    data: Prisma.UsersUpdateInput
+  }): Promise<Users> {
+    return prisma.users.update({
       where: { id },
       data
     })
   },
-  async delete(id: string): Promise<User> {
-    return prisma.user.delete({
+  async delete(id: string): Promise<Users> {
+    return prisma.users.delete({
       where: { id }
     })
   }

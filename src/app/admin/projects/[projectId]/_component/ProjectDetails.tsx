@@ -2,13 +2,17 @@
 
 import { Box, Button, Table } from '@mantine/core'
 import Link from 'next/link'
-import { useDisclosure } from '@mantine/hooks'
 import EntryList from './EntryList'
 import DeleteProject from './DeleteProject'
+import type { Projects } from '@prisma/client'
+import { route } from 'nextjs-routes'
+import { PageType } from '@/types'
+import { URL_ADMIN_EDIT, URL_ADMIN_PROJECT_LIST } from '@/const/config'
 
-const ProjectDetails = () => {
-  const [opened, { open, close }] = useDisclosure(false)
-
+const ProjectDetails = ({
+  project,
+  deadline
+}: { project: Projects; deadline: string }) => {
   return (
     <>
       <Box mb="2.5rem" style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -16,7 +20,7 @@ const ProjectDetails = () => {
           display={'block'}
           type="button"
           component={Link}
-          href="/admin/projects"
+          href={URL_ADMIN_PROJECT_LIST}
           style={{ width: '7rem' }}
         >
           戻る
@@ -28,33 +32,31 @@ const ProjectDetails = () => {
             <Table.Th bg="blue.1" ta="center" w="20rem">
               案件名
             </Table.Th>
-            <Table.Td>開発マッチングアプリ作成依頼</Table.Td>
+            <Table.Td>{project.title}</Table.Td>
           </Table.Tr>
           <Table.Tr>
             <Table.Th bg="blue.1" ta="center" w="20rem">
               概要
             </Table.Th>
-            <Table.Td>
-              アプリ開発したい方と開発いたい人とを繋ぎ、雇用を促進したい
-            </Table.Td>
+            <Table.Td>{project.summary}</Table.Td>
           </Table.Tr>
           <Table.Tr>
             <Table.Th bg="blue.1" ta="center" w="20rem">
               必要なスキル
             </Table.Th>
-            <Table.Td>Next.js、Typescript、Supabase</Table.Td>
+            <Table.Td>{project.skills.join(', ')}</Table.Td>
           </Table.Tr>
           <Table.Tr>
             <Table.Th bg="blue.1" ta="center" w="20rem">
               募集締切
             </Table.Th>
-            <Table.Td>2024/04/20</Table.Td>
+            <Table.Td>{deadline}</Table.Td>
           </Table.Tr>
           <Table.Tr>
             <Table.Th bg="blue.1" ta="center" w="20rem">
               単価
             </Table.Th>
-            <Table.Td>30,000円</Table.Td>
+            <Table.Td>{project.rate.toLocaleString()}円</Table.Td>
           </Table.Tr>
         </Table.Tbody>
       </Table>
@@ -66,11 +68,18 @@ const ProjectDetails = () => {
           margin: '2.5rem auto 0'
         }}
       >
-        <Button type="button" component={Link} href="/">
+        <Button
+          type="button"
+          component={Link}
+          href={route({
+            pathname: URL_ADMIN_EDIT,
+            query: { projectId: project.id }
+          })}
+        >
           編集する
         </Button>
-        <EntryList />
-        <DeleteProject />
+        <EntryList projectId={project.id} />
+        <DeleteProject projectId={project.id} pageType={PageType.DETAIL} />
       </Box>
     </>
   )

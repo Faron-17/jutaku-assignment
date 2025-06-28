@@ -3,38 +3,44 @@
 import {
   AFTER_SIGNIN_PATH,
   AFTER_SIGNOUT_PATH,
-  AFTER_SIGNUP_FOR_DB_REGISTER_PATH
+  AFTER_SIGNUP_FOR_DB_REGISTER_PATH,
+  AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH
 } from '@/const/config'
+import { RoleType } from '@/types'
 import { redirect } from 'next/navigation'
 import { createClient } from '~/lib/supabase/server'
 import { serverApi } from '~/lib/trpc/server-api'
 
 type EmailAndPassword = {
+  username?: string
   email: string
   password: string
 }
 
 export const signup = async ({
+  username,
   email,
   password
-}: EmailAndPassword): Promise<{
-  error?: string
-}> => {
+}: EmailAndPassword) => {
   try {
-    console.log('signup:', { email, password })
+    console.log('signup:', { username, email, password })
 
     const authResponse = await createClient().auth.signUp({
       email,
-      password
-      // options: {
-      //   emailRedirectTo: `${location.origin}/api/auth/callback`
-      // }
+      password,
+      options: {
+        data: {
+          display_name: username
+        }
+      }
     })
     console.log('authResponse', authResponse)
     const user = authResponse.data.user
     await serverApi().user.create({
       email: user?.email ?? '',
-      name: user?.email ?? ''
+      username: user?.user_metadata.display_name ?? '',
+      password: user?.user_metadata.password ?? '',
+      role: 'USER'
     })
 
     const userId = user?.id
@@ -44,14 +50,8 @@ export const signup = async ({
     console.log('error', error)
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
 }
-export const signin = async ({
-  email,
-  password
-}: EmailAndPassword): Promise<{
-  error?: string
-}> => {
+export const signin = async ({ email, password }: EmailAndPassword) => {
   try {
     console.log('signin:', { email, password })
 
@@ -64,11 +64,47 @@ export const signin = async ({
       return { error: JSON.stringify(error) }
     }
     if (!data) return { error: 'data is undefined' }
+
+    const user = await serverApi().user.findByRole({
+      id: data.user.id,
+      role: RoleType.USER
+    })
+    if (!user) {
+      return { error: 'User not found or invalid role' }
+    }
     console.log('signin成功', { data })
+    return { error: false }
   } catch (error) {
     return { error: JSON.stringify(error) }
   }
-  redirect(AFTER_SIGNUP_FOR_DB_REGISTER_PATH)
+}
+
+export const signinAdmin = async ({ email, password }: EmailAndPassword) => {
+  try {
+    console.log('signin:', { email, password })
+
+    const { data, error } = await createClient().auth.signInWithPassword({
+      email,
+      password
+    })
+    if (error) {
+      console.log('error', error)
+      return { error: JSON.stringify(error) }
+    }
+    if (!data) return { error: 'data is undefined' }
+
+    const user = await serverApi().user.findByRole({
+      id: data.user.id,
+      role: RoleType.ADMIN
+    })
+    if (!user) {
+      return { error: 'User not found or invalid role' }
+    }
+
+    console.log('signin admin成功', { data })
+  } catch (error) {
+    return { error: JSON.stringify(error) }
+  }
 }
 
 export const signOut = async (): Promise<{

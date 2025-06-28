@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useTransition } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signin } from '@/serverActions/supabaseAuth'
+import { signinAdmin } from '@/serverActions/supabaseAuth'
 
 import {
   Card,
@@ -14,25 +14,22 @@ import {
   Stack,
   Text
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
+import { URL_ADMIN_PROJECT_LIST } from '@/const/config'
 
-const signinSchema = z
-  .object({
-    email: z.string().email({ message: '無効なメールアドレスです' }),
-    password: z
-      .string()
-      .min(8, { message: 'パスワードは必須です' })
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-        message: 'パスワードは英字と数字の両方を含めてください'
-      }),
-    passwordConfirm: z.string()
+const signinSchema = z.object({
+  email: z.string().email({ message: '無効なメールアドレスです' }),
+  password: z.string().regex(/^(?=.*[a-zA-Z])(?=.*\d)/, {
+    message: 'パスワードは英字と数字の両方を含めてください'
   })
-  .refine((data) => data.password === data.passwordConfirm, {
-    path: ['passwordConfirm'],
-    message: 'パスワードが一致しません'
-  })
+})
 type SigninFormData = z.infer<typeof signinSchema>
 
 export function AdminSigninForm() {
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState('')
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -42,8 +39,23 @@ export function AdminSigninForm() {
   })
 
   const onSigninSubmit = async (data: SigninFormData) => {
-    const { email, password } = data
-    await signin({ email, password })
+    try {
+      const { email, password } = data
+      const result = await signinAdmin({ email, password })
+      const error = result?.error
+      if (error) {
+        setError('ログインできませんでした。入力内容をお確かめください。')
+      } else {
+        startTransition(() => {
+          router.replace(URL_ADMIN_PROJECT_LIST)
+        })
+      }
+    } catch (error) {
+      console.error('Signin error:', error)
+      setError(
+        '予期せぬエラーが発生しました。しばらくしてから再度ログインしてください。'
+      )
+    }
   }
 
   return (
@@ -70,7 +82,7 @@ export function AdminSigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="email"
+              placeholder="メールアドレス"
               {...register('email')}
               error={errors.email?.message}
               disabled={isSubmitting}
@@ -86,13 +98,13 @@ export function AdminSigninForm() {
                   </Text>
                 </Text>
               }
-              placeholder="password"
+              placeholder="パスワード"
               {...register('password')}
               error={errors.password?.message}
               disabled={isSubmitting}
             />
           </div>
-          <Button type="submit" loading={isSubmitting} mt={64}>
+          <Button type="submit" loading={isSubmitting || isPending} mt={64}>
             ログイン
           </Button>
         </Stack>
@@ -107,6 +119,11 @@ export function AdminSigninForm() {
       {errors.password?.message && (
         <Text color="red" size="sm">
           {errors.password.message}
+        </Text>
+      )}
+      {error && (
+        <Text color="red" size="sm">
+          {error}
         </Text>
       )}
     </Card>

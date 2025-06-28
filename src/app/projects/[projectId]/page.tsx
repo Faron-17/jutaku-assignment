@@ -1,8 +1,34 @@
 import { ProjectDetails } from '@/app/projects/[projectId]/_component/ProjectDetails'
+import { LOGINED_CHECK_FAILED_REDIRECT_URL } from '@/const/config'
+import { RoleType } from '@/types'
 import { Box, Button, Title } from '@mantine/core'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { serverApi } from '~/lib/trpc/server-api'
+import { formatDate } from '~/util'
 
-export default function ProjectDetail() {
+export default async function ProjectDetail({
+  params
+}: {
+  params: { projectId: string }
+}) {
+  const projectId = params.projectId
+  const api = serverApi()
+
+  // ユーザー認証
+  const user = await api
+    .userInfo()
+    .catch(() => redirect(LOGINED_CHECK_FAILED_REDIRECT_URL))
+  if (!user) redirect(LOGINED_CHECK_FAILED_REDIRECT_URL)
+
+  // 管理者権限でのログインの場合はリダイレクト
+  const userData = await api.user.find(user.id)
+  if (userData?.role === RoleType.ADMIN)
+    redirect(LOGINED_CHECK_FAILED_REDIRECT_URL)
+
+  // プロジェクトの取得
+  const project = await api.projects.find(projectId).catch(() => null)
+
   return (
     <>
       <Title order={2} ta="center" mb="lg">
@@ -13,13 +39,22 @@ export default function ProjectDetail() {
           display={'block'}
           type="button"
           component={Link}
-          href="/admin/projects"
+          href="/projects"
           style={{ width: '7rem' }}
         >
           戻る
         </Button>
       </Box>
-      <ProjectDetails />
+      {project ? (
+        <ProjectDetails
+          project={project}
+          userId={user.id}
+          deadline={formatDate(project.deadlineAt)}
+          createdAt={formatDate(project.createdAt)}
+        />
+      ) : (
+        <p>案件を取得できませんでした。</p>
+      )}
     </>
   )
 }

@@ -2,25 +2,56 @@
 
 import Link from 'next/link'
 import { Box, Button, Title, Table, Group } from '@mantine/core'
-import type { RoleTypeProps } from '@/types'
+import type { Projects } from '@prisma/client'
+import { PageType, type RoleType } from '@/types'
+import { route } from 'nextjs-routes'
+import DeleteProject from '../admin/projects/[projectId]/_component/DeleteProject'
+import { formatDate } from '~/util'
+import { useRouter } from 'next/navigation'
+import { AiOutlineReload } from 'react-icons/ai'
+import {
+  URL_ADMIN_EDIT,
+  URL_ADMIN_NEW,
+  URL_ADMIN_PROJECT,
+  URL_USER_ENTRY_LIST,
+  URL_USER_PROJECT
+} from '@/const/config'
 
-export const ProjectList = ({ roleType }: RoleTypeProps) => {
+type ProjectListProps = {
+  roleType: RoleType
+  projects: Projects[]
+}
+
+export function ProjectList({ roleType, projects }: ProjectListProps) {
   const isAdmin = roleType === 'ADMIN'
-
+  const router = useRouter()
+  const handleReload = () => {
+    router.refresh()
+  }
   return (
     <>
       <Title order={2} ta="center" mb="lg">
         案件一覧
       </Title>
-      <Box mb="lg">
+      <Box
+        mb="lg"
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center'
+        }}
+      >
+        <Button onClick={handleReload} color="blue" variant="outline">
+          <AiOutlineReload size={16} />
+        </Button>
         <Button
-          ml="auto"
+          ml="1rem"
           mr="0"
           display={'block'}
           type="button"
           style={{ width: '12.25rem' }}
           component={Link}
-          href={isAdmin ? '/admin/projects/new' : '/entry-list'}
+          href={isAdmin ? URL_ADMIN_NEW : URL_USER_ENTRY_LIST}
         >
           {isAdmin ? '新規案件作成' : 'エントリー一覧'}
         </Button>
@@ -47,29 +78,46 @@ export const ProjectList = ({ roleType }: RoleTypeProps) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr>
-            <Table.Td>2024/03/12</Table.Td>
-            <Table.Td>案件マッチングアプリ</Table.Td>
-            <Table.Td>アプリ開発したい方と開発したい人...</Table.Td>
-            <Table.Td>Next.js、TypeScript、Supabase</Table.Td>
-            <Table.Td>
-              <Group gap="sm" justify="center">
-                <Button type="button" component={Link} href="/">
-                  詳細
-                </Button>
-                {isAdmin && (
-                  <>
-                    <Button type="button" component={Link} href="/">
-                      編集
-                    </Button>
-                    <Button type="button" color="red">
-                      削除
-                    </Button>
-                  </>
-                )}
-              </Group>
-            </Table.Td>
-          </Table.Tr>
+          {projects.map((project) => (
+            <Table.Tr key={project.id}>
+              <Table.Td>{formatDate(project.createdAt)}</Table.Td>
+              <Table.Td>{project.title}</Table.Td>
+              <Table.Td>{project.summary}</Table.Td>
+              <Table.Td>{project.skills.join(', ')}</Table.Td>
+              <Table.Td>
+                <Group gap="sm" justify="center">
+                  <Button
+                    type="button"
+                    component={Link}
+                    href={route({
+                      pathname: isAdmin ? URL_ADMIN_PROJECT : URL_USER_PROJECT,
+                      query: { projectId: project.id }
+                    })}
+                  >
+                    詳細
+                  </Button>
+                  {isAdmin && (
+                    <>
+                      <Button
+                        type="button"
+                        component={Link}
+                        href={route({
+                          pathname: URL_ADMIN_EDIT,
+                          query: { projectId: project.id }
+                        })}
+                      >
+                        編集
+                      </Button>
+                      <DeleteProject
+                        projectId={project.id}
+                        pageType={PageType.LIST}
+                      />
+                    </>
+                  )}
+                </Group>
+              </Table.Td>
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
     </>

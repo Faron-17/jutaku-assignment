@@ -2,9 +2,41 @@
 
 import { Card, Button, Title, Text, Box, Modal, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import type { Projects } from '@prisma/client'
+import { createEntry } from '../../../../serverActions/entries'
+import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 
-export function ProjectDetails() {
+export function ProjectDetails({
+  project,
+  userId,
+  deadline,
+  createdAt
+}: { project: Projects; userId: string; deadline: string; createdAt: string }) {
   const [opened, { open, close }] = useDisclosure(false)
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  // エントリー
+  const handleEntry = async () => {
+    setIsSubmitting(true)
+    try {
+      await createEntry({
+        projectId: project.id,
+        userId
+      })
+      startTransition(() => {
+        open()
+      })
+    } catch (error) {
+      console.error('エントリーに失敗しました:', error)
+    }
+    setIsSubmitting(false)
+  }
+
+  const handleClose = () => {
+    router.push('/entry-list')
+  }
 
   return (
     <Card
@@ -24,52 +56,57 @@ export function ProjectDetails() {
       <Box>
         <Title order={5}>案件作成日</Title>
         <Text size="md" mt={8}>
-          2024/03/12
+          {createdAt}
         </Text>
       </Box>
       <Box>
         <Title order={5}>案件名</Title>
         <Text size="md" mt={8}>
-          開発マッチングアプリ作成依頼
+          {project.title}
         </Text>
       </Box>
       <Box>
         <Title order={5}>概要</Title>
         <Text size="md" mt={8}>
-          アプリ開発したい人と開発してほしい人をマッチングし 雇用を促進したい
+          {project.summary}
         </Text>
       </Box>
       <Box>
         <Title order={5}>必要なスキル</Title>
         <Text size="md" mt={8}>
-          Next, Typescript, Supabase
+          {project.skills.join(', ')}
         </Text>
       </Box>
       <Box>
         <Title order={5}>募集締切</Title>
         <Text size="md" mt={8}>
-          2024/04/20
+          {deadline}
         </Text>
       </Box>
       <Box>
         <Title order={5}>単価</Title>
         <Text size="md" mt={8}>
-          30,000円
+          {project.rate.toLocaleString()}円
         </Text>
       </Box>
-      <Button type="submit" mt={20} onClick={open}>
+      <Button
+        type="submit"
+        mt={20}
+        onClick={handleEntry}
+        loading={isSubmitting || isPending}
+      >
         <Text size="md" fw={600}>
           この案件にエントリーする
         </Text>
       </Button>
-      <Modal opened={opened} onClose={close} mt={100} centered>
+      <Modal opened={opened} onClose={handleClose} mt={100} centered>
         <Flex direction="column" align="center" justify="center" gap="md">
           <Text size="md">エントリーしました</Text>
           <Button
             type="submit"
             mt={20}
             mb={34}
-            onClick={close}
+            onClick={handleClose}
             style={{ width: '19.625rem' }}
           >
             <Text size="md" fw={600}>

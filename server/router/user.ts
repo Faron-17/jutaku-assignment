@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { router } from '~/lib/trpc/trpc'
 import { userRepository } from '../repository/user'
 import { userProcedure } from '../middleware'
+import { Role } from '@prisma/client'
 
 export const userRouter = router({
   list: userProcedure.query(async () => {
@@ -10,11 +11,28 @@ export const userRouter = router({
   find: userProcedure.input(z.string()).query(async ({ input }) => {
     return await userRepository.findUnique(input)
   }),
+  findById: userProcedure
+    .input(z.array(z.string()))
+    .query(async ({ input }) => {
+      return await userRepository.findById(input)
+    }),
+  findByRole: userProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        role: z.nativeEnum(Role)
+      })
+    )
+    .query(async ({ input }) => {
+      return await userRepository.findByRole(input)
+    }),
   create: userProcedure
     .input(
       z.object({
-        name: z.string(),
-        email: z.string().email()
+        username: z.string(),
+        email: z.string().email(),
+        password: z.string(),
+        role: z.nativeEnum(Role)
       })
     )
     .mutation(async ({ input, ctx: { userId } }) => {
@@ -26,7 +44,7 @@ export const userRouter = router({
     .input(
       z.object({
         id: z.string(),
-        name: z.string(),
+        username: z.string(),
         email: z.string().email()
       })
     )

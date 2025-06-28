@@ -21,12 +21,16 @@ export const AFTER_SIGNOUT_PATH = '/' satisfies LinkProps['href']
 export const AFTER_SIGNUP_PATH = '/' satisfies LinkProps['href']
 export const AFTER_SIGNUP_FOR_DB_REGISTER_PATH =
   '/projects' satisfies LinkProps['href']
-
+export const AFTER_ADMIN_SIGNUP_FOR_DB_REGISTER_PATH =
+  '/admin/projects' satisfies LinkProps['href']
 // ログイン済みチェックURLリスト
 export function isLoginedCheckUrl(url: string): boolean {
   return url.startsWith('/my-page')
   // url.startsWith('/users')
 }
+
+export const AFTER_NOT_SIGNIN_PATH_ADMIN =
+  '/admin/signin' satisfies LinkProps['href']
 
 // ログイン済みチェックで失敗した際のリダイレクト先
 export const LOGINED_CHECK_FAILED_REDIRECT_URL: string = '/'
@@ -39,3 +43,11 @@ export const getCorsUrl = () => {
 
   return CORS_LOCAL_URL
 }
+
+export const URL_ADMIN_PROJECT_LIST = '/admin/projects'
+export const URL_ADMIN_PROJECT = '/admin/projects/[projectId]'
+export const URL_ADMIN_NEW = '/admin/projects/new'
+export const URL_ADMIN_EDIT = '/admin/projects/[projectId]/edit'
+export const URL_USER_PROJECT = '/projects/[projectId]'
+export const URL_USER_PROJECT_LIST = '/projects'
+export const URL_USER_ENTRY_LIST = '/entry-list'
